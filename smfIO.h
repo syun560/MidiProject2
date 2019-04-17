@@ -22,6 +22,6 @@ class smfIO {
 public:
 	smfIO();
 	int read(char* filename);
-	int write(char* filename, int data);
+	int write(char* filename, char* data, int size);
 	void draw();
 };

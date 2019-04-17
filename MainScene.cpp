@@ -1,8 +1,6 @@
 #include "MainScene.h"
 #include "Input.h"
 
-static unsigned char rest[5] = {0x8F, 0x00, 0x80, 0x30, 0x00};
-
 MainScene::MainScene() {
 	
 }
@@ -14,7 +12,9 @@ void MainScene::Update() {
 		else printfDx("読み込み成功\n");
 	}
 	if (Input::Key(KEY_INPUT_S) == 1) { // ファイル書き出し
-		if (smfio.write("output.mid", 1) == -1) printfDx("書き込み失敗\n");
+		char data[1000]; // できれば動的に決定すべき
+		int size = midiEventManager.getMidiMsgForSMF(data);
+		if (smfio.write("output.mid", data, size) == -1) printfDx("書き込み失敗\n");
 		else printfDx("書き込み成功\n");
 	}
 	if (Input::Key(KEY_INPUT_A) == 1) { // 再生

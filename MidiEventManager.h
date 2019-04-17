@@ -12,4 +12,9 @@ public:
 	void addNote(int Ch, int tick, int notenum, int gate, int vel=100);
 	void autoCreate();
 	void draw();
+
+	// ファイル書き込みのためのデータを作成して、渡す
+	int getMidiMsgForSMF(char* data);
+
+	int getMidiEventNum();
 };

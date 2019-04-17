@@ -58,7 +58,7 @@ int smfIO::read(char* fileName) {
 	return 0;
 }
 
-int smfIO::write(char* fileName, int data) {
+int smfIO::write(char* fileName, char* data, int size) {
 	FILE* fp;
 	if ((fp = fopen(fileName, "wb")) == NULL) {
 		return -1;
@@ -85,6 +85,15 @@ int smfIO::write(char* fileName, int data) {
 
 	// トラックチャンク書き込み
 	for (int i = 0; i < header.track.i; ++i) {
+
+		if (i == 1) {
+			// サイズ計算して、track[0]に書き込む
+			
+			track[i].size.i = size;
+			track[i].data = data;
+		}
+
+		// ここ書き込んだ後にもう一回track[i].sizeが必要になるから2回ConvertEndianが必要なんだなあ
 		fwrite(&track[i].type, 4, 1, fp);
 		if (IsLittleEndian) {
 			ConvertEndian(track[i].size, 4);
@@ -93,6 +102,8 @@ int smfIO::write(char* fileName, int data) {
 		if (IsLittleEndian) {
 			ConvertEndian(track[i].size, 4);
 		}
+
+		// データ書き込み
 		fwrite(track[i].data, 1, track[i].size.i, fp);
 	}
 
