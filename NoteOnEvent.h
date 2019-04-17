@@ -1,0 +1,16 @@
+#pragma once
+#include "MidiEvent.h"
+
+class NoteOnEvent :public MidiEvent{
+	int ch; // チャンネル
+	int type; // タイプ（8=NoteOn、9=NoteOff)
+	int tick; // 演奏開始位置からの時間
+	int note, vel, gate;
+public:
+	NoteOnEvent();
+	NoteOnEvent(int Ch, int tick, int Note, int Vel, int Gate);
+	int GetCh() const;
+	int GetNote() const;
+	int GetGate() const;
+	int GetTick() const;
+};
