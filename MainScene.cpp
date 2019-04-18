@@ -8,27 +8,30 @@ MainScene::MainScene() {
 void MainScene::Update() {
 	// 操作系
 	if (Input::Key(KEY_INPUT_O) == 1) { // ファイル読み込み
-		if (smfio.read("kaeru.mid") == -1) printfDx("読み込み失敗\n");
+		if (smfio.read("input.mid") == -1) printfDx("読み込み失敗\n");
 		else printfDx("読み込み成功\n");
 	}
 	if (Input::Key(KEY_INPUT_S) == 1) { // ファイル書き出し
-		char data[1000]; // TODO できれば動的に決定すべき
+		char data[10000]; // TODO できれば動的に決定すべき
 		int size = midiEventManager.getMidiMsgForSMF(data);
 		if (smfio.write("output.mid", data, size) == -1) printfDx("書き込み失敗\n");
 		else printfDx("書き込み成功\n");
 	}
 	if (Input::Key(KEY_INPUT_A) == 1) { // 再生
 		PlayMusic("output.mid", DX_PLAYTYPE_BACK);
-		printfDx("%sを再生\n", "kaeru.mid");
+		printfDx("%sを再生\n", "output.mid");
 	}
 	if (Input::Key(KEY_INPUT_J) == 1) { // 自動作曲
-		midiEventManager.autoCreate();
+		midiEventManager.autoCreate(480 * 3 * 32);
 	}
 
 	if (Input::Key(KEY_INPUT_D) == 1) StopMusic(); // 停止
 
 	// デバッグ系
-	if (Input::Key(KEY_INPUT_C) == 1) clsDx();
+	if (Input::Key(KEY_INPUT_C) == 1) {
+		clsDx();
+		midiEventManager.deleteAllEvent();
+	}
 }
 
 void MainScene::Draw(){

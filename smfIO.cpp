@@ -87,10 +87,11 @@ int smfIO::write(char* fileName, char* data, int size) {
 	// トラックチャンク書き込み
 	for (int i = 0; i < header.track.i; ++i) {
 
-		if (i == 1) {
-			// サイズ計算して、track[0]に書き込む
+		if (i == 3) {
+			// 引数からサイズとデータのアドレスを受け取る
 			
 			track[i].size.i = size;
+			track[i].data = new char[size];
 			track[i].data = data;
 		}
 

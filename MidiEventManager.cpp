@@ -2,37 +2,59 @@
 
 MidiEventManager::MidiEventManager() {
 	div = 480;
-	activeCh = 0;
-
-	// 1拍ぶんの休符を追加したい
+	activeCh = 1;
 }
 
 void MidiEventManager::addNote(int ch, int delta, int notenum, int gate, int vel) {
+	// 1拍ぶんの休符を追加したい
+	if (seq == 0) {
+		note[ch].emplace_back(ch, div * 4, 60, 0, 0);
+		seq += div * 4;
+		return;
+	}
 
 	// ノートオンとノートオフ(vel0)を追加
-	note.emplace_back(ch, delta, notenum, gate, vel);
-	note.emplace_back(ch, gate, notenum, 0, 0);
+	note[ch].emplace_back(ch, delta, notenum, gate, vel);
+	note[ch].emplace_back(ch, gate, notenum, 0, 0);
 
 	// mapのキーは128（ノートナンバー）* 分解能（480）* 4 * 128をしてもint型に余裕で収まる
 	INT_MAX;
 	2147483647;
+
+	// 現在のシーケンス位置を移動
+	seq += delta + gate;
 }
 
-void MidiEventManager::autoCreate() {
+void MidiEventManager::autoCreate(int length) {
 	// とりあえず、自動作曲の伴奏部分を作ってみる。
-	// ランダムで配置
+	// ランダムで配置（あまりに飛び飛びの演奏はやめる）
 	static const int majorScale[8] = { 60, 62, 64, 65, 67, 69, 71, 72 };
 	static const int chordC[4] = { 60, 64, 67, 72 };
-	for (int i = 0; i < 10; i++)
-		addNote(activeCh, 0, majorScale[GetRand(7)], div / 8);
+	static const int kokken[] = { 54, 56, 58, 61, 63, 66, 68, 70, 73, 75, 78 };
+	static const int gate[8] = { div / 2 , div / 2, div / 2, div / 2, div, div, div, div * 3 / 2};
+	static const int rest[] = { 0, 0, 0, 0, 0, div / 2};
+	int key, preKey;
+	key = preKey = GetRand(10);
+	while (seq < length) {
+		preKey = key; // 前に押した黒鍵を覚えておく
+		do {
+			key = preKey - 2 + GetRand(4);
+		} while (key < 0 || key > 10);
+		addNote(activeCh, rest[GetRand(5)], kokken[key], gate[GetRand(7)], 90 + GetRand(20));
+	}	
+}
+
+void MidiEventManager::deleteAllEvent() {
+	note[activeCh].clear();
+	seq = 0;
 }
 
 void MidiEventManager::draw() {
 	// MIDIイベントを表示（現在操作中のチャンネルのNoteONイベントのみ）
 	int j = 0;
-	for (auto itr = note.cbegin(); itr != note.cend(); itr++) {
+	for (auto itr = note[activeCh].cbegin(); itr != note[activeCh].cend(); itr++) {
 		if (itr->GetVel() == 0) continue;
-		DrawFormatString(0, 20 * j, WHITE, "CH:%d Delta:%d Note:%d Gate:%d", itr->GetCh(), itr->GetDelta(), itr->GetNote(), itr->GetGate());
+		DrawFormatString(100, 20 * j, WHITE, "CH:%d Delta:%d Note:%d Gate:%d", itr->GetCh(), itr->GetDelta(), itr->GetNote(), itr->GetGate());
 		j++;
 	}
 }
@@ -41,7 +63,7 @@ int MidiEventManager::getMidiMsgForSMF(char* data) {
 	int i = 0;
 	// 最初の処理
 
-	for (auto itr = note.cbegin(); itr != note.cend(); itr++) {
+	for (auto itr = note[activeCh].cbegin(); itr != note[activeCh].cend(); itr++) {
 		// デルタタイムの計算
 		int delta = itr->GetDelta();
 		if (delta >> 21 != 0) data[i++] = (delta >> 21) | 128;
