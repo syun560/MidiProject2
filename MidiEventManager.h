@@ -9,12 +9,10 @@ class MidiEventManager {
 	std::vector<NoteOnEvent> note; // できればMapで管理
 public:
 	MidiEventManager();
-	void addNote(int Ch, int tick, int notenum, int gate, int vel=100);
+	void addNote(int Ch, int delta, int notenum, int gate, int vel=100);
 	void autoCreate();
 	void draw();
 
 	// ファイル書き込みのためのデータを作成して、渡す
 	int getMidiMsgForSMF(char* data);
-
-	int getMidiEventNum();
 };

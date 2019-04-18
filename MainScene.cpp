@@ -12,7 +12,7 @@ void MainScene::Update() {
 		else printfDx("読み込み成功\n");
 	}
 	if (Input::Key(KEY_INPUT_S) == 1) { // ファイル書き出し
-		char data[1000]; // できれば動的に決定すべき
+		char data[1000]; // TODO できれば動的に決定すべき
 		int size = midiEventManager.getMidiMsgForSMF(data);
 		if (smfio.write("output.mid", data, size) == -1) printfDx("書き込み失敗\n");
 		else printfDx("書き込み成功\n");

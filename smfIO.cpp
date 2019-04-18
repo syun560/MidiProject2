@@ -71,11 +71,12 @@ int smfIO::write(char* fileName, char* data, int size) {
 		ConvertEndian(header.track, 2);
 		ConvertEndian(header.division, 2);
 	}
-	fwrite(&header.type, 4, 1, fp);
-	fwrite(&header.size, 4, 1, fp);
-	fwrite(&header.format, 2, 1, fp);
-	fwrite(&header.track, 2, 1, fp);
-	fwrite(&header.division, 2, 1, fp);
+	// TODO 読み込み時のファイルデータに依存しているため、実行時に変更可能なものとしたい
+	fwrite(&header.type, 4, 1, fp); // MThdで大丈夫？
+	fwrite(&header.size, 4, 1, fp); //　固定8だよね？
+	fwrite(&header.format, 2, 1, fp); // 4で大丈夫？
+	fwrite(&header.track, 2, 1, fp); // 実行時に変更されるかも
+	fwrite(&header.division, 2, 1, fp); // ふつうは480
 	if (IsLittleEndian) {
 		ConvertEndian(header.size, 4);
 		ConvertEndian(header.format, 2);
