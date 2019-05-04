@@ -2,7 +2,7 @@
 #include "Input.h"
 
 MainScene::MainScene() {
-	
+	font = CreateFontToHandle(NULL, 40, 3, DX_FONTTYPE_ANTIALIASING);
 }
 
 void MainScene::Update() {
@@ -32,16 +32,26 @@ void MainScene::Update() {
 		clsDx();
 		midiEventManager.deleteAllEvent();
 	}
+
+	midiController.Update(conductor.Update());
 }
 
 void MainScene::Draw(){
 	// MIDIイベントを表示
 	midiEventManager.draw();
+	midiController.Draw();
 
 	// 操作方法を表示
-	static const int INFO_X = 400;
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA,125);
-	DrawBox(INFO_X - 20, 80, FMX - 20, 240, WHITE,TRUE);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	DrawFormatString(INFO_X, 80, WHITE, "操作方法\nOキーで読込\nSキーで保存\nAキーで再生\nDキーで停止\nCキーでクリア\nESCで終了");
+	if (Input::Key(KEY_INPUT_M) > 0) {
+		static const int INFO_X = 400;
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 125);
+		DrawBox(INFO_X - 20, 80, FMX - 20, 240, BLACK, TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		DrawFormatString(INFO_X, 80, WHITE, "操作方法\nOキーで読込\nSキーで保存\nAキーで再生\nDキーで停止\nCキーでクリア\nESCで終了");
+	}
+	
+
+	// TODO:テンポやプレイ状況、スケールを表示
+	// コードを表示
+	DrawStringToHandle(FMX/2 - 30, FMY/2 - 30, "Dm", WHITE, font);
 }

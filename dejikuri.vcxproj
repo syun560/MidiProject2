@@ -119,20 +119,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Conducter.cpp" />
+    <ClCompile Include="CurrentSound.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="MainScene.cpp" />
+    <ClCompile Include="MidiController.cpp" />
     <ClCompile Include="MidiEventManager.cpp" />
     <ClCompile Include="NoteOnEvent.cpp" />
+    <ClCompile Include="PanelMenu.cpp" />
     <ClCompile Include="smfIO.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Conducter.h" />
+    <ClInclude Include="CurrentSound.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="MainScene.h" />
+    <ClInclude Include="MidiController.h" />
     <ClInclude Include="MidiEvent.h" />
     <ClInclude Include="MidiEventManager.h" />
     <ClInclude Include="NoteOnEvent.h" />
+    <ClInclude Include="PanelMenu.h" />
     <ClInclude Include="smfIO.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
