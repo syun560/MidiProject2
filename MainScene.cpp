@@ -8,6 +8,7 @@ MainScene::MainScene() {
 	if(midiController.Init() == -1) printfDx("MIDI初期化失敗\n");
 	InputMode = false;
 	legacyMode = false; // 昔の機能
+	key1 = key2 = 0;
 }
 
 int MainScene::ExecCommand(const char* command) {
@@ -45,16 +46,28 @@ void MainScene::FileSave(const char* filename) {
 
 int MainScene::Update() {
 	// 更新
+	// ここでtickの値を得る
 	int c = conductor.Update();
 	midiController.Update(conductor.GetDelta());
 	gridRoll.Update(conductor.GetMea(), midiController.GetFocusCh());
 
-	// 音楽
-	if (c != -1) {
+	// シーケンス
+	if (c != -1) { // PLAYINGだったら
 		for (int ch = 0; ch < 16; ch++) {
-			if (gridRoll.GetNoteData(ch, c) != -1) {
-				midiController.Play(ch, gridRoll.GetNoteData(ch, c), gridRoll.GetGateData(ch, c), 100);
+			// if (gridRoll.GetNoteData(ch, c) != -1) {
+				// midiController.Play(ch, gridRoll.GetNoteData(ch, c), gridRoll.GetGateData(ch, c), 100);
+			key1 = (int)conductor.GetPreTick();
+			key2 = (int)c;
+			for (int key = key1; key < key2; key++) {
+				int note = midiEventManager.GetNoteData(ch, key);
+				int gate = midiEventManager.GetGateData(ch, key);
+				int vel = midiEventManager.GetVelData(ch, key);
+				if (note == -1 || gate == -1 || vel == -1) continue;
+				printfDx("note: %d gate: %d\n", note, gate);
+				midiController.Play(ch, note, gate, vel);
+				//midiController.Play(ch, 60, 200, 100);
 			}
+			// }
 		}
 	}
 
@@ -103,8 +116,8 @@ int MainScene::Update() {
 				else printfDx("読み込み成功\n");
 			}
 			else if (Input::Key(KEY_INPUT_A) == 1) { // 再生
-				PlayMusic("output.mid", DX_PLAYTYPE_BACK);
-				printfDx("%sを再生\n", "output.mid");
+				if (PlayMusic("output.mid", DX_PLAYTYPE_BACK) == -1) printfDx("エラー発生\n");
+				else printfDx("%sを再生\n", "output.mid");
 			}
 			else if (Input::Key(KEY_INPUT_J) == 1) { // 自動作曲
 				midiEventManager.autoCreate(480 * 3 * 32);
@@ -113,14 +126,15 @@ int MainScene::Update() {
 				printfDx("自動演奏開始\n");
 			}
 			else if (Input::Key(KEY_INPUT_Z) == 1) { // 自動演奏開始
-				printfDx("ドの音を鳴らした！\n");
-				midiController.justPlay(0, 60, 480, 100);
+				midiController.Play(midiController.GetFocusCh(), 60, 480 * 2, 100);
 			}
 			else if (Input::Key(KEY_INPUT_X) == 1) StopMusic(); // MIDI停止
 			else if (Input::Key(KEY_INPUT_D) == 1) gridRoll.DeleteOnePhrase();
 			else if (Input::Key(KEY_INPUT_C) == 1) gridRoll.Copy();
 			else if (Input::Key(KEY_INPUT_V) == 1) gridRoll.Paste();
-			else if (Input::Key(KEY_INPUT_UP) == 1) gridRoll.HigherOctave();
+			else if (Input::Key(KEY_INPUT_UP) == 1) {
+				gridRoll.HigherOctave();
+			}
 			else if (Input::Key(KEY_INPUT_DOWN) == 1) gridRoll.LowerOctave();
 			else if (Input::Key(KEY_INPUT_RIGHT) == 1) {
 				midiController.AllStop();
@@ -160,7 +174,9 @@ void MainScene::Draw(){
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		DrawFormatString(INFO_X, 80, WHITE, "操作方法\nOキーで読込\nSキーで保存\nAキーで再生\nDキーで停止\nCキーでクリア\nESCで終了");
 	}
-	
+
+	// デバッグ
+	DrawFormatString(0, FMY - 40, WHITE, "key1 = %d, key2 = %d", key1, key2);
 
 	// TODO:テンポやプレイ状況、スケールを表示
 	// コードを表示

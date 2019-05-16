@@ -235,32 +235,22 @@ void MidiController::Update(double delta) {
 		}
 		else ++itr;
 	}
-
-	//ƒpƒlƒ‹‘€ìAProgramChange‚È‚Ç
-	int p = panel.Update();
-	if (p > 0) {
-		ProgramChange(p - 1, NowProgram[p-1] + 1);
-	}
-	else if (p < 0) {
-		p *= -1;
-		ProgramChange(p - 1, NowProgram[p-1] - 1);
-	}
 }
 
 void MidiController::NextProgram() {
-
+	ProgramChange(panel.GetFocus(), NowProgram[panel.GetFocus()] + 1);
 }
 
 void MidiController::PreProgram() {
-
+	ProgramChange(panel.GetFocus(), NowProgram[panel.GetFocus()] - 1);
 }
 
 void MidiController::NextCh() {
-
+	panel.FocusDown();
 }
 
 void MidiController::PreCh() {
-
+	panel.FocusUp();
 }
 
 // –Â‚é‰¹‚Ì“o˜^
@@ -275,6 +265,9 @@ void MidiController::Play(int ch,int note,int gate, int vel) {
 			break;
 		}
 	}
+	DWORD NoteOn = vel << 16 | note << 8 | 9 << 4 | ch;
+	midiOutShortMsg(g_hMidi, NoteOn);
+	cs.emplace_back(ch, note, gate);
 }
 
 // ‰¹‚ð“o˜^‚¹‚¸‚½‚¾’e‚­

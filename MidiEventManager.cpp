@@ -17,10 +17,13 @@ void MidiEventManager::addNote(int ch, int delta, int notenum, int gate, int vel
 	note[ch].emplace_back(ch, delta, notenum, gate, vel);
 	note[ch].emplace_back(ch, gate, notenum, 0, 0);
 
-	// mapのキーは128（ノートナンバー）* 分解能（480）* 4 * 128をしてもint型に余裕で収まる
-	INT_MAX;
-	2147483647;
-
+	// mapのキーは分解能（480）* 拍（4）小節（128)をしてもint型に余裕で収まる
+	// INT_MAX = 2147483647;
+	int mapKey1 = seq + delta;
+	int mapKey2 = seq + delta + gate - 1; // NoteOffのキーは次のNoteOnと重ならないように-1する
+	noteMap[ch].insert(std::pair<int, NoteOnEvent>(mapKey1, NoteOnEvent(ch, delta, notenum, gate, vel)));
+	noteMap[ch].insert(std::pair<int, NoteOnEvent>(mapKey2, NoteOnEvent(ch, gate, notenum, 0, 0)));
+	
 	// 現在のシーケンス位置を移動
 	seq += delta + gate;
 }
@@ -49,6 +52,29 @@ void MidiEventManager::deleteAllEvent() {
 	seq = 0;
 }
 
+int MidiEventManager::GetNoteData(int ch, int key) const {
+	auto itr = noteMap[ch].find(key);
+	if (itr != noteMap[ch].end()) {
+		return itr->second.GetNote();
+	}
+	else return -1;
+}
+int MidiEventManager::GetGateData(int ch, int key) const {
+	auto itr = noteMap[ch].find(key);
+	if (itr != noteMap[ch].end()) {
+		return itr->second.GetGate();
+	}
+	else return -1;
+}
+int MidiEventManager::GetVelData(int ch, int key) const {
+	auto itr = noteMap[ch].find(key);
+	if (itr != noteMap[ch].end()) {
+		return itr->second.GetVel();
+	}
+	else return -1;
+}
+
+
 void MidiEventManager::draw() {
 	// MIDIイベントを表示（現在操作中のチャンネルのNoteONイベントのみ）
 	int j = 0;
@@ -57,6 +83,12 @@ void MidiEventManager::draw() {
 		DrawFormatString(100, 20 * j, WHITE, "CH:%d Delta:%d Note:%d Gate:%d", itr->GetCh(), itr->GetDelta(), itr->GetNote(), itr->GetGate());
 		j++;
 	}
+	/*int j = 0;
+	for (auto itr = noteMap[activeCh].cbegin(); itr != noteMap[activeCh].cend(); itr++) {
+		if (itr->second.GetVel() == 0) continue;
+		DrawFormatString(100, 20 * j, WHITE, "mapKey:%d CH:%d Delta:%d Note:%d Gate:%d", itr->first, itr->second.GetCh(), itr->second.GetDelta(), itr->second.GetNote(), itr->second.GetGate());
+		j++;
+	}*/
 }
 
 int MidiEventManager::getMidiMsgForSMF(char* data) {

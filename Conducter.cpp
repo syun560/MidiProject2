@@ -15,23 +15,25 @@ Conducter::Conducter() {
 }
 
 int Conducter::Update() {
+	delta = bpm * Resolution / 3600.0; // delta(1フレームでどれくらい進めばよいか）をBPMから計算
 	if (state != PLAYING) return -1;
 	pretick = tick;
-	delta = bpm * Resolution / 3600.0;
 	tick += delta;
 	//一小節超えたら
 	if (tick >= Resolution * Beat) {
 		tick -= Resolution * Beat;
 		mea++;
 		if (Repeat) mea--;
-		return 0;
+		// return 0;
 	}
-	for (int i = 0; i < 16; i++) {
-		if (pretick <= bit*i && bit*i < tick) {
-			return i;
-		}
-	}
-	return -1;
+	// 普通に剰余演算で良いのでは？→変わった瞬間を知るためかな、商でないとだめ
+	//for (int i = 0; i < 16; i++) {
+	//	if (pretick <= bit*i && bit*i < tick) {
+	//		return i;
+	//	}
+	//}
+	//return (int)tick%(int)bit;
+	return tick + mea * Resolution * Beat;
 }
 
 void Conducter::Slower() {
@@ -93,6 +95,10 @@ void Conducter::Draw(int x, int y) const{
 
 double Conducter::GetDelta() const {
 	return delta;
+}
+
+double Conducter::GetPreTick() const {
+	return pretick + mea * Resolution * Beat;
 }
 
 int Conducter::GetMea() const {

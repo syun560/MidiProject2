@@ -14,36 +14,11 @@ void PanelMenu::Set(int dnum, char* name) {
 	focus = 0;
 }
 
-int PanelMenu::Update() {
-	if (!active) return 0;
-	static const int holdtime = 30;
-	if (Input::Key(KEY_INPUT_LSHIFT) < 1) return 0;
-	if (Input::Key(KEY_INPUT_DOWN) == 1 || Input::Key(KEY_INPUT_DOWN) > holdtime) {
-		if (++focus == num) focus = 0;
-	}
-	if (Input::Key(KEY_INPUT_UP) == 1 || Input::Key(KEY_INPUT_UP) > holdtime) {
-		if (--focus == -1) focus = num - 1;
-	}
-	if (Input::Key(KEY_INPUT_RIGHT) == 1 || Input::Key(KEY_INPUT_RIGHT) > holdtime) {
-		return focus+1;
-	}
-	if (Input::Key(KEY_INPUT_LEFT) == 1 || Input::Key(KEY_INPUT_LEFT) > holdtime) {
-		return -1 * (focus+1);
-	}
-	return 0;
-}
-
 void PanelMenu::FocusUp() {
-
+	if (++focus == num) focus = 0;
 }
 void PanelMenu::FocusDown() {
-
-}
-void PanelMenu::ValueUp() {
-
-}
-void PanelMenu::ValueDown() {
-
+	if (--focus == -1) focus = num - 1;
 }
 
 void PanelMenu::Draw(int x, int y) const{

@@ -10,11 +10,8 @@ class PanelMenu {
 public:
 	PanelMenu();
 	void Set(int num, char* name);
-	int Update();
 	void FocusUp();
 	void FocusDown();
-	void ValueUp();
-	void ValueDown();
 	void Draw(int x, int y) const;
 	int GetFocus() const;
 };

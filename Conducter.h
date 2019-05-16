@@ -22,11 +22,14 @@ public:
 	void EndBeat();
 	int Update();
 	void Stop();
+
 	void SetRepeat();
 	void Pause();
 	void Save(FILE* fp);
 	void Load(FILE* fp);
 	void Draw(int x, int y) const;
+	
 	double GetDelta() const;
+	double GetPreTick() const;
 	int GetMea() const;
 };
