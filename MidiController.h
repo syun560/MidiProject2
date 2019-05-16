@@ -23,6 +23,7 @@ public:
 	int Init();
 	void Update(double delta);
 	void Play(int ch, int note, int gate, int vel);
+	void justPlay(int ch, int note, int gate, int vel);
 	void AllStop();
 	void ProgramChange(int ch, int num);
 	void NextProgram();

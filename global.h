@@ -16,3 +16,5 @@ static const int CYAN = GetColor(255, 255, 0);
 //‰æ–Ê‚Ì‘å‚«‚³
 static const int FMX = 640;
 static const int FMY = 480;
+
+void DrawEdgeBox(int x1, int y1, int x2, int y2, int FillColor, int LineColor = WHITE);

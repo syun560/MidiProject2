@@ -119,11 +119,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CommandInput.cpp" />
     <ClCompile Include="Conducter.cpp" />
     <ClCompile Include="CurrentSound.cpp" />
+    <ClCompile Include="DebugTimer.cpp" />
+    <ClCompile Include="global.cpp" />
+    <ClCompile Include="GridRoll.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="MainScene.cpp" />
     <ClCompile Include="MidiController.cpp" />
+    <ClCompile Include="MidiEvent.cpp" />
     <ClCompile Include="MidiEventManager.cpp" />
     <ClCompile Include="NoteOnEvent.cpp" />
     <ClCompile Include="PanelMenu.cpp" />
@@ -131,9 +136,12 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CommandInput.h" />
     <ClInclude Include="Conducter.h" />
     <ClInclude Include="CurrentSound.h" />
+    <ClInclude Include="DebugTimer.h" />
     <ClInclude Include="global.h" />
+    <ClInclude Include="GridRoll.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="MainScene.h" />
     <ClInclude Include="MidiController.h" />
