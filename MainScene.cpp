@@ -1,5 +1,7 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "MainScene.h"
 #include "Input.h"
+
 
 MainScene::MainScene() {
 	font = CreateFontToHandle(NULL, 40, 3, DX_FONTTYPE_ANTIALIASING);
@@ -23,6 +25,9 @@ void MainScene::Update() {
 	}
 	if (Input::Key(KEY_INPUT_J) == 1) { // 自動作曲
 		midiEventManager.autoCreate(480 * 3 * 32);
+	}
+	if (Input::Key(KEY_INPUT_E) == 1) { // 自動演奏開始
+		printfDx("自動演奏開始\n");
 	}
 
 	if (Input::Key(KEY_INPUT_D) == 1) StopMusic(); // 停止
