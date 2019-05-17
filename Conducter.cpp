@@ -92,7 +92,7 @@ void Conducter::Draw(int x, int y) const{
 			DrawCircle(i * 16 + 16 / 2 + x, y - 16 / 2, 3, RED);
 		}
 		else {
-			DrawCircle(i * 16 + 16 / 2 + x, y - 16 / 2, 3, RED, FALSE);
+			DrawCircle(i * 16 + 16 / 2 + x, y - 16 / 2, 3, WHITE, FALSE);
 		}
 	}
 }
