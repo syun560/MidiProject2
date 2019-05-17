@@ -15,6 +15,7 @@ public:
 	void addNote(int Ch, int delta, int notenum, int gate, int vel=100);
 	void deleteAllEvent();
 	void autoCreate(int length=480);
+	void Update(int focusch);
 	void draw();
 
 	int GetNoteData(int ch, int key) const;

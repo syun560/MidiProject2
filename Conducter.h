@@ -17,14 +17,14 @@ public:
 	void Faster();
 	void Slower();
 	void NextMea();
-	void PreMea();
+	bool PreMea();
 	void FirstBeat();
 	void EndBeat();
 	int Update();
 	void Stop();
 
 	void SetRepeat();
-	void Pause();
+	void PlayOrPause();
 	void Save(FILE* fp);
 	void Load(FILE* fp);
 	void Draw(int x, int y) const;

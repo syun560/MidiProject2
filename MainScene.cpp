@@ -50,6 +50,7 @@ int MainScene::Update() {
 	int c = conductor.Update();
 	midiController.Update(conductor.GetDelta());
 	gridRoll.Update(conductor.GetMea(), midiController.GetFocusCh());
+	midiEventManager.Update(midiController.GetFocusCh());
 
 	// シーケンス
 	if (c != -1) { // PLAYINGだったら
@@ -91,7 +92,10 @@ int MainScene::Update() {
 		}
 		else if (Input::Key(KEY_INPUT_LCONTROL) > 0 || Input::Key(KEY_INPUT_RCONTROL) > 0) {
 			if (Input::Key(KEY_INPUT_RIGHT) == 1) conductor.NextMea();
-			else if (Input::Key(KEY_INPUT_LEFT) == 1) conductor.PreMea();
+			else if (Input::Key(KEY_INPUT_LEFT) == 1) {
+				conductor.PreMea();
+				if (Input::Key(KEY_INPUT_LSHIFT) > 0) while (conductor.PreMea());
+			}
 			else if (Input::Key(KEY_INPUT_UP) == 1) gridRoll.KeyUp();
 			else if (Input::Key(KEY_INPUT_DOWN) == 1) gridRoll.KeyDown();
 			else if (Input::Key(KEY_INPUT_D) == 1) gridRoll.DeleteAll();
@@ -122,10 +126,7 @@ int MainScene::Update() {
 			else if (Input::Key(KEY_INPUT_J) == 1) { // 自動作曲
 				midiEventManager.autoCreate(480 * 3 * 32);
 			}
-			else if (Input::Key(KEY_INPUT_E) == 1) { // 自動演奏開始
-				printfDx("自動演奏開始\n");
-			}
-			else if (Input::Key(KEY_INPUT_Z) == 1) { // 自動演奏開始
+			else if (Input::Key(KEY_INPUT_Z) == 1) { // 単音を鳴らす
 				midiController.Play(midiController.GetFocusCh(), 60, 480 * 2, 100);
 			}
 			else if (Input::Key(KEY_INPUT_X) == 1) StopMusic(); // MIDI停止
@@ -152,7 +153,7 @@ int MainScene::Update() {
 		}
 		if (Input::Key(KEY_INPUT_SPACE) == 1) {
 			midiController.AllStop();
-			conductor.Pause();
+			conductor.PlayOrPause();
 		}
 	}
 	return 0;
@@ -174,9 +175,6 @@ void MainScene::Draw(){
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		DrawFormatString(INFO_X, 80, WHITE, "操作方法\nOキーで読込\nSキーで保存\nAキーで再生\nDキーで停止\nCキーでクリア\nESCで終了");
 	}
-
-	// デバッグ
-	DrawFormatString(0, FMY - 40, WHITE, "key1 = %d, key2 = %d", key1, key2);
 
 	// TODO:テンポやプレイ状況、スケールを表示
 	// コードを表示

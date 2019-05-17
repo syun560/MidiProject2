@@ -54,8 +54,12 @@ void Conducter::NextMea() {
 	if(++mea == 126) mea = 125;
 }
 
-void Conducter::PreMea() {
-	if (--mea == -1) mea = 0;
+bool Conducter::PreMea() {
+	if (--mea == -1) {
+		mea = 0;
+		return false;
+	}
+	else return true;
 }
 
 void Conducter::FirstBeat() {
@@ -73,7 +77,7 @@ void Conducter::Stop() {
 	pretick = tick = 0.0;
 }
 
-void Conducter::Pause() {
+void Conducter::PlayOrPause() {
 	if (state == PLAYING) {
 		state = PAUSE;
 	}

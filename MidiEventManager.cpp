@@ -2,7 +2,7 @@
 
 MidiEventManager::MidiEventManager() {
 	div = 480;
-	activeCh = 1;
+	activeCh = 0;
 }
 
 void MidiEventManager::addNote(int ch, int delta, int notenum, int gate, int vel) {
@@ -74,6 +74,9 @@ int MidiEventManager::GetVelData(int ch, int key) const {
 	else return -1;
 }
 
+void MidiEventManager::Update(int focusch) {
+	activeCh = focusch;
+}
 
 void MidiEventManager::draw() {
 	// MIDIイベントを表示（現在操作中のチャンネルのNoteONイベントのみ）
@@ -89,6 +92,7 @@ void MidiEventManager::draw() {
 		DrawFormatString(100, 20 * j, WHITE, "mapKey:%d CH:%d Delta:%d Note:%d Gate:%d", itr->first, itr->second.GetCh(), itr->second.GetDelta(), itr->second.GetNote(), itr->second.GetGate());
 		j++;
 	}*/
+	DrawFormatString(320, 30, CYAN, "activeCh = %d", activeCh);
 }
 
 int MidiEventManager::getMidiMsgForSMF(char* data) {

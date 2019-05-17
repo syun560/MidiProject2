@@ -22,9 +22,10 @@ void PanelMenu::FocusDown() {
 }
 
 void PanelMenu::Draw(int x, int y) const{
-	DrawBox(x,y,x+150,y+num*20,GREEN,FALSE);
+	static const int width = 200;
+	DrawBox(x, y, x + width, y + num * 20, GREEN, FALSE);
 	for (int i = 0; i < num; i++) {
-		if (i == focus) DrawBox(x, y +i * 20, x + 150, y+i*20+20,YELLOW,FALSE);
+		if (i == focus) DrawBox(x, y + i * 20, x + width, y + i * 20 + 20, YELLOW, FALSE);
 		DrawFormatString(x, y+i*20, WHITE, "%s", panel[i]);
 	}
 }

@@ -11,14 +11,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	MainScene mainScene;
 	while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0) {
 		Input::update();
-		DebugTimer debugTimer1("更新処理");
+		DebugTimer debugTimer1("Update");
 		if (mainScene.Update() == -1) break;;
 		debugTimer1.Stop();
-		DebugTimer debugTimer2("更新処理");
+		DebugTimer debugTimer2("Draw");
 		mainScene.Draw();
 		debugTimer2.Stop();
-		debugTimer1.Draw(FMX / 2, FMY - 40);
-		debugTimer2.Draw(FMX / 2, FMY - 20);
+		debugTimer1.Draw(FMX - 150, FMY - 40);
+		debugTimer2.Draw(FMX - 150, FMY - 20);
 	}
 	DxLib_End();
 	return 0;
