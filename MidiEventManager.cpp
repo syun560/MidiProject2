@@ -9,23 +9,23 @@ MidiEventManager::MidiEventManager() {
 
 void MidiEventManager::addNote(int ch, int delta, int notenum, int gate, int vel) {
 	// 1拍ぶんの休符を追加したい
-	if (seq == 0) {
-		note[ch].emplace_back(ch, div * 4, 60, 0, 0);
-		seq += div * 4;
-		return;
-	}
+	//if (seq == 0) {
+	//	note[ch].emplace_back(ch, div * 4, 60, 0, 0);
+	//	seq += div * 4;
+	//	return;
+	//}
 
-	// ノートオンとノートオフ(vel0)を追加
-	note[ch].emplace_back(ch, delta, notenum, gate, vel);
-	note[ch].emplace_back(ch, gate, notenum, 0, 0);
+	//// ノートオンとノートオフ(vel0)を追加
+	//note[ch].emplace_back(ch, delta, notenum, gate, vel);
+	//note[ch].emplace_back(ch, gate, notenum, 0, 0);
 
 	// mapのキーは分解能（480）* 拍（4）小節（128)をしてもint型に余裕で収まる
 	// INT_MAX = 2147483647;
 	int mapKey1 = seq + delta;
 	int mapKey2 = seq + delta + gate - 1; // NoteOffのキーは次のNoteOnと重ならないように-1する
-	noteMap[ch].insert(std::pair<int, NoteOnEvent>(mapKey1, NoteOnEvent(ch, delta, notenum, gate, vel)));
-	noteMap[ch].insert(std::pair<int, NoteOnEvent>(mapKey2, NoteOnEvent(ch, gate, notenum, 0, 0)));
-	
+	noteMap[ch].emplace(mapKey1, NoteOnEvent(ch, delta, notenum, gate, vel));
+	noteMap[ch].emplace(mapKey1, NoteOnEvent(ch, gate, notenum, 0, 0));
+
 	// 現在のシーケンス位置を移動
 	seq += delta + gate;
 }
@@ -50,7 +50,7 @@ void MidiEventManager::autoCreate(int length) {
 }
 
 void MidiEventManager::deleteAllEvent() {
-	note[activeCh].clear();
+	noteMap[activeCh].clear();
 	seq = 0;
 }
 
@@ -82,13 +82,8 @@ void MidiEventManager::Update(int focusch) {
 
 void MidiEventManager::draw() {
 	// MIDIイベントを表示（現在操作中のチャンネルのNoteONイベントのみ）
-	/*int j = 0;
-	for (auto itr = note[activeCh].cbegin(); itr != note[activeCh].cend(); itr++) {
-		if (itr->GetVel() == 0) continue;
-		DrawFormatString(100, 20 * j, WHITE, "CH:%d Delta:%d Note:%d Gate:%d", itr->GetCh(), itr->GetDelta(), itr->GetNote(), itr->GetGate());
-		j++;
-	}*/
 	int j = 0;
+	// Condoctorの動きに合わせて表示するようにしたい。
 	for (auto itr = noteMap[activeCh].cbegin(); itr != noteMap[activeCh].cend(); itr++) {
 		if (itr->second.GetVel() == 0) continue;
 		int delta = itr->second.GetDelta();
@@ -97,24 +92,25 @@ void MidiEventManager::draw() {
 		DrawFormatString(540, 50 + 20 * j, WHITE, "%5d %4d %2s[%d] %d", itr->first, delta, keyName[note % 12], note, gate);
 		if (++j == 20) break;
 	}
-	DrawFormatString(320, 30, CYAN, "activeCh = %d", activeCh);
+	DrawBox(540, 50, 740, 50 + 20 * 20, GREEN, FALSE);
+	DrawBox(540, 50, 740, 50 + 20, YELLOW, FALSE);
 }
 
 int MidiEventManager::getMidiMsgForSMF(char* data) {
 	int i = 0;
 	// 最初の処理
 
-	for (auto itr = note[activeCh].cbegin(); itr != note[activeCh].cend(); itr++) {
+	for (auto itr = noteMap[activeCh].cbegin(); itr != noteMap[activeCh].cend(); itr++) {
 		// デルタタイムの計算
-		int delta = itr->GetDelta();
+		int delta = itr->second.GetDelta();
 		if (delta >> 21 != 0) data[i++] = (delta >> 21) | 128;
 		if (delta >> 14 != 0) data[i++] = ((delta >> 14) & 127) | 128;
 		if (delta >> 7 != 0) data[i++] = ((delta >> 7) & 127) | 128;
 		data[i++] = delta & 127;
 
-		data[i++] = (9 << 4) | itr->GetCh(); // 第一バイト
-		data[i++] = itr->GetNote(); // 第二バイト
-		data[i++] = itr->GetVel(); // 第三バイト
+		data[i++] = (9 << 4) | itr->second.GetCh(); // 第一バイト
+		data[i++] = itr->second.GetNote(); // 第二バイト
+		data[i++] = itr->second.GetVel(); // 第三バイト
 	}
 
 	// メタイベント・EOF（00 FF 2F 00）

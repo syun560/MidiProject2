@@ -8,7 +8,6 @@ class MidiEventManager {
 	int div; // 分解能
 	int activeCh; // アクティブなチャンネル
 	int seq; // シーケンス位置
-	std::vector<NoteOnEvent> note[16]; // できればMapで管理
 	std::map<int, NoteOnEvent> noteMap[16];
 public:
 	MidiEventManager();
