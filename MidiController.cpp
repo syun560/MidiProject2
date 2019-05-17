@@ -270,13 +270,6 @@ void MidiController::Play(int ch,int note,int gate, int vel) {
 	cs.emplace_back(ch, note, gate);
 }
 
-// ‰¹‚ð“o˜^‚¹‚¸‚½‚¾’e‚­
-void MidiController::justPlay(int ch, int note, int gate, int vel) {
-	DWORD NoteOn = vel << 16 | note << 8 | 9 << 4 | ch;
-	midiOutShortMsg(g_hMidi, NoteOn);
-}
-
-
 void MidiController::Stop(int ch, int note) {
 	DWORD NoteOff = 0 << 16 | note << 8 | 9 << 4 | ch;
 	midiOutShortMsg(g_hMidi, NoteOff);

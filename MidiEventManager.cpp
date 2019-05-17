@@ -1,10 +1,20 @@
 #include "MidiEventManager.h"
 
 static const char keyName[12][4] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+static const int ScaleC[13] = { 1,1,0,1,0,1,0,1,1,0,1,0,1 };
+static const int avoidcol = GetColor(80, 80, 80);
+static const int gatecol = GetColor(200, 200, 255);
 
 MidiEventManager::MidiEventManager() {
 	div = 480;
 	activeCh = 0;
+	BlockSize = 16;
+	BlockWidth = 16;
+	BlockHeight = 24;
+	Base = 60;
+	// グリッドの位置
+	x = 50;
+	y = 50;
 }
 
 void MidiEventManager::addNote(int ch, int delta, int notenum, int gate, int vel) {
@@ -31,6 +41,8 @@ void MidiEventManager::addNote(int ch, int delta, int notenum, int gate, int vel
 }
 
 void MidiEventManager::autoCreate(int length) {
+	seq = 0;
+
 	// とりあえず、自動作曲の伴奏部分を作ってみる。
 	// ランダムで配置（あまりに飛び飛びの演奏はやめる）
 	static const int majorScale[8] = { 60, 62, 64, 65, 67, 69, 71, 72 };
@@ -76,24 +88,60 @@ int MidiEventManager::GetVelData(int ch, int key) const {
 	else return -1;
 }
 
-void MidiEventManager::Update(int focusch) {
+void MidiEventManager::Update(int focusch, int dmea) {
 	activeCh = focusch;
+	mea = dmea;
 }
 
 void MidiEventManager::draw() {
+	//TODO Baseの範囲のNoteだけを表示したい
+	DrawFormatString(x - 30, y + BlockHeight * BlockSize, WHITE, "C%d", Base / 12);
+	// グリッドを描画
+	for (int i = 0; i < BlockWidth; i++) {
+		for (int j = 0; j <= BlockHeight; j++) {
+			if (ScaleC[j] == 0) DrawEdgeBox(i * BlockSize + x, j * BlockSize + y, (i + 1)*BlockSize + x, (j + 1)*BlockSize + y, avoidcol);
+			else DrawBox(i * BlockSize + x, j * BlockSize + y, (i + 1)*BlockSize + x, (j + 1)*BlockSize + y, WHITE, FALSE);
+		}
+	}
+
 	// MIDIイベントを表示（現在操作中のチャンネルのNoteONイベントのみ）
 	int j = 0;
 	// Condoctorの動きに合わせて表示するようにしたい。
-	for (auto itr = noteMap[activeCh].cbegin(); itr != noteMap[activeCh].cend(); itr++) {
+	int firsttick = mea * div * 4;
+	int endtick = (mea + 1) * div * 4 - 1;
+	for (auto itr = noteMap[activeCh].lower_bound(firsttick); itr != noteMap[activeCh].upper_bound(endtick); itr++) {
 		if (itr->second.GetVel() == 0) continue;
+		int tick = itr->first % (div * 4);
 		int delta = itr->second.GetDelta();
 		int note = itr->second.GetNote();
 		int gate = itr->second.GetGate();
-		DrawFormatString(540, 50 + 20 * j, WHITE, "%5d %4d %2s[%d] %d", itr->first, delta, keyName[note % 12], note, gate);
+		DrawFormatString(540, 50 + 20 * j, WHITE, "%5d %4d %2s[%d] %d", tick, delta, keyName[note % 12], note, gate);
 		if (++j == 20) break;
+
+		// Noteを描画
+		int n = note - Base; // Baseから何個上の音か？
+		if (0 <= n && n < BlockHeight) {
+			int x1 = BlockSize * tick / 120.0 + x;
+			int y1 = (BlockHeight - n) * BlockSize + y;
+			int x2 = x1 + BlockSize * gate / 120.0;
+			int y2 = y1 + BlockSize;
+			DrawEdgeBox(x1, y1, x2, y2, GREEN);
+		}
+
+
 	}
 	DrawBox(540, 50, 740, 50 + 20 * 20, GREEN, FALSE);
-	DrawBox(540, 50, 740, 50 + 20, YELLOW, FALSE);
+	// DrawBox(540, 50, 740, 50 + 20, YELLOW, FALSE);
+}
+
+void MidiEventManager::LowerOctave() {
+	Base -= 12;
+	if (Base < 0) Base += 12;
+}
+
+void MidiEventManager::HigherOctave() {
+	Base += 12;
+	if (Base > 127) Base -= 12;
 }
 
 int MidiEventManager::getMidiMsgForSMF(char* data) {

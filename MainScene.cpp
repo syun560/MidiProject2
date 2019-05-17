@@ -49,26 +49,24 @@ int MainScene::Update() {
 	// ここでtickの値を得る
 	int c = conductor.Update();
 	midiController.Update(conductor.GetDelta());
+	// TODO 同じような処理が重複してる
 	gridRoll.Update(conductor.GetMea(), midiController.GetFocusCh());
-	midiEventManager.Update(midiController.GetFocusCh());
+	midiEventManager.Update(midiController.GetFocusCh(), conductor.GetMea());
 
 	// シーケンス
 	if (c != -1) { // PLAYINGだったら
 		for (int ch = 0; ch < 16; ch++) {
-			// if (gridRoll.GetNoteData(ch, c) != -1) {
-				// midiController.Play(ch, gridRoll.GetNoteData(ch, c), gridRoll.GetGateData(ch, c), 100);
 			key1 = (int)conductor.GetPreTick();
 			key2 = (int)c;
 			for (int key = key1; key < key2; key++) {
+				// TODO 下の３つの関数を構造体などを使用してひとつにまとめたい
 				int note = midiEventManager.GetNoteData(ch, key);
 				int gate = midiEventManager.GetGateData(ch, key);
 				int vel = midiEventManager.GetVelData(ch, key);
 				if (note == -1 || gate == -1 || vel == -1) continue;
 				// printfDx("note: %d gate: %d\n", note, gate);
 				midiController.Play(ch, note, gate, vel);
-				//midiController.Play(ch, 60, 200, 100);
 			}
-			// }
 		}
 	}
 
@@ -124,6 +122,7 @@ int MainScene::Update() {
 				else printfDx("%sを再生\n", "output.mid");
 			}
 			else if (Input::Key(KEY_INPUT_J) == 1) { // 自動作曲
+				midiEventManager.deleteAllEvent();
 				midiEventManager.autoCreate(480 * 3 * 32);
 			}
 			else if (Input::Key(KEY_INPUT_Z) == 1) { // 単音を鳴らす
@@ -133,10 +132,8 @@ int MainScene::Update() {
 			else if (Input::Key(KEY_INPUT_D) == 1) gridRoll.DeleteOnePhrase();
 			else if (Input::Key(KEY_INPUT_C) == 1) gridRoll.Copy();
 			else if (Input::Key(KEY_INPUT_V) == 1) gridRoll.Paste();
-			else if (Input::Key(KEY_INPUT_UP) == 1) {
-				gridRoll.HigherOctave();
-			}
-			else if (Input::Key(KEY_INPUT_DOWN) == 1) gridRoll.LowerOctave();
+			else if (Input::Key(KEY_INPUT_UP) == 1) midiEventManager.HigherOctave();
+			else if (Input::Key(KEY_INPUT_DOWN) == 1) midiEventManager.LowerOctave();
 			else if (Input::Key(KEY_INPUT_RIGHT) == 1) {
 				midiController.AllStop();
 				conductor.EndBeat();
@@ -148,7 +145,6 @@ int MainScene::Update() {
 			else if (Input::Key(KEY_INPUT_R) == 1) conductor.SetRepeat();
 			else if (Input::Key(KEY_INPUT_BACK) == 1) {
 				clsDx();
-				midiEventManager.deleteAllEvent();
 			}
 		}
 		if (Input::Key(KEY_INPUT_SPACE) == 1) {

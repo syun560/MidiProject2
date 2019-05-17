@@ -11,8 +11,7 @@ class GridRoll {
 	
 	// ノート
 	std::map<int, MidiEvent> midiEvent[16];
-	// チャンネル数（16個）分のMidiEvent、現在位置をkeyにして取り出せる
-
+	
 	// シーケンス情報
 	int Base, Ch, Mea;
 
@@ -33,6 +32,4 @@ public:
 
 	void KeyUp();
 	void KeyDown();
-	void LowerOctave();
-	void HigherOctave();
 };

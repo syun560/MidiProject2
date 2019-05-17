@@ -1,6 +1,7 @@
 #pragma once
 #include "MidiEvent.h"
 
+// TODO 継承をできればやめたい
 class NoteOnEvent :public MidiEvent{
 	int ch; // チャンネル
 	int type; // タイプ（8=NoteOn、9=NoteOff)

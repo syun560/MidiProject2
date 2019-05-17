@@ -1,9 +1,6 @@
 #include "GridRoll.h"
 #include "Input.h"
 
-static const int ScaleC[13] = {1,1,0,1,0,1,0,1,1,0,1,0,1};
-static const int avoidcol = GetColor(80,80,80);
-static const int gatecol = GetColor(200,200,255);
 
 GridRoll::GridRoll() {
 	BlockSize = 16;
@@ -44,15 +41,6 @@ void GridRoll::KeyDown() {
 	}*/
 }
 
-void GridRoll::LowerOctave() {
-	Base -= 12;
-	if (Base < 0) Base += 12;
-}
-
-void GridRoll::HigherOctave() {
-	Base += 12;
-	if (Base > 127) Base -= 12;
-}
 
 int GridRoll::GetNoteData(int ch, int bit) const{
 	return 0;
@@ -164,16 +152,6 @@ void GridRoll::Paste() {
 }
 
 void GridRoll::Draw() const{
-	// Note情報
-	//TODO Baseの範囲のNoteだけを表示したい
-	DrawFormatString(x - 30, y + BlockHeight * BlockSize, WHITE, "C%d", Base / 12);
-	// グリッドを描画
-	for (int i = 0; i < BlockWidth; i++) {
-		for (int j = 0; j <= BlockHeight; j++) {
-			if (ScaleC[j] == 0) DrawEdgeBox(i * BlockSize + x, j * BlockSize + y, (i + 1)*BlockSize + x, (j + 1)*BlockSize + y, avoidcol);
-			else DrawBox(i * BlockSize + x, j * BlockSize + y, (i + 1)*BlockSize + x, (j + 1)*BlockSize + y, WHITE, FALSE);
-		}
-	}
 	// Noteを描画
 	//int beginid = getID(Mea, 0, 0);
 	//int endid = getID(Mea + 1, 0, 0);
