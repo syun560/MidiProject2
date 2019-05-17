@@ -6,6 +6,7 @@
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	SetMainWindowText("MIDIProject");
 	ChangeWindowMode(TRUE);
+	SetGraphMode(FMX, FMY, 32);
 	if (DxLib_Init() == -1)	return -1;
 	SetDrawScreen(DX_SCREEN_BACK);
 	MainScene mainScene;

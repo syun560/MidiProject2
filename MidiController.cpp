@@ -303,16 +303,16 @@ MidiController::~MidiController() {
 
 void MidiController::Draw() const{
 	for (int i = 0; i < 16; i++) {
-		if(i==9) DrawFormatString(FMX / 2, 50 + 20 * i, WHITE, "%s (%d)", DrumName[NowProgram[i]], NowProgram[i]);
-		else DrawFormatString(FMX / 2, 50 + 20*i, WHITE, "%s (%d)", InstrumentsName[NowProgram[i]], NowProgram[i]);
+		if(i==9) DrawFormatString(320, 50 + 20 * i, WHITE, "%s (%d)", DrumName[NowProgram[i]], NowProgram[i]);
+		else DrawFormatString(320, 50 + 20*i, WHITE, "%s (%d)", InstrumentsName[NowProgram[i]], NowProgram[i]);
 	}
 	// –Â‚Á‚Ä‚¢‚é‰¹‚ð•\Ž¦‚·‚é
-	int j = 18;
+	/*int j = 18;
 	for (auto itr = cs.cbegin(); itr != cs.cend(); itr++) {
 		DrawFormatString(50, j * 20, WHITE, "CH:%d Note:%d Gate:%.2f", itr->GetCh(), itr->GetNote(), itr->GetGate());
 		j++;
-	}
-	panel.Draw(FMX / 2, 50);
+	}*/
+	panel.Draw(320, 50);
 }
 
 void MidiController::Save(FILE* fp) {

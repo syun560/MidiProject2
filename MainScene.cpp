@@ -64,7 +64,7 @@ int MainScene::Update() {
 				int gate = midiEventManager.GetGateData(ch, key);
 				int vel = midiEventManager.GetVelData(ch, key);
 				if (note == -1 || gate == -1 || vel == -1) continue;
-				printfDx("note: %d gate: %d\n", note, gate);
+				// printfDx("note: %d gate: %d\n", note, gate);
 				midiController.Play(ch, note, gate, vel);
 				//midiController.Play(ch, 60, 200, 100);
 			}

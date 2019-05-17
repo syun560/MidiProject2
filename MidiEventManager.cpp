@@ -1,5 +1,7 @@
 #include "MidiEventManager.h"
 
+static const char keyName[12][4] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+
 MidiEventManager::MidiEventManager() {
 	div = 480;
 	activeCh = 0;
@@ -80,18 +82,21 @@ void MidiEventManager::Update(int focusch) {
 
 void MidiEventManager::draw() {
 	// MIDIイベントを表示（現在操作中のチャンネルのNoteONイベントのみ）
-	int j = 0;
+	/*int j = 0;
 	for (auto itr = note[activeCh].cbegin(); itr != note[activeCh].cend(); itr++) {
 		if (itr->GetVel() == 0) continue;
 		DrawFormatString(100, 20 * j, WHITE, "CH:%d Delta:%d Note:%d Gate:%d", itr->GetCh(), itr->GetDelta(), itr->GetNote(), itr->GetGate());
 		j++;
-	}
-	/*int j = 0;
+	}*/
+	int j = 0;
 	for (auto itr = noteMap[activeCh].cbegin(); itr != noteMap[activeCh].cend(); itr++) {
 		if (itr->second.GetVel() == 0) continue;
-		DrawFormatString(100, 20 * j, WHITE, "mapKey:%d CH:%d Delta:%d Note:%d Gate:%d", itr->first, itr->second.GetCh(), itr->second.GetDelta(), itr->second.GetNote(), itr->second.GetGate());
-		j++;
-	}*/
+		int delta = itr->second.GetDelta();
+		int note = itr->second.GetNote();
+		int gate = itr->second.GetGate();
+		DrawFormatString(540, 50 + 20 * j, WHITE, "%5d %4d %2s[%d] %d", itr->first, delta, keyName[note % 12], note, gate);
+		if (++j == 20) break;
+	}
 	DrawFormatString(320, 30, CYAN, "activeCh = %d", activeCh);
 }
 
