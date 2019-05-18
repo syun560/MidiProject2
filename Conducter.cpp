@@ -24,6 +24,7 @@ int Conducter::Update() {
 		tick -= Resolution * Beat;
 		mea++;
 		if (Repeat) mea--;
+		if (mea == 24) mea = 0;
 		// return 0;
 	}
 	// 普通に剰余演算で良いのでは？→変わった瞬間を知るためかな、商でないとだめ

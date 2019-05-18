@@ -144,7 +144,7 @@ int MainScene::Update() {
 			}
 			else if (Input::Key(KEY_INPUT_R) == 1) conductor.SetRepeat();
 			else if (Input::Key(KEY_INPUT_BACK) == 1) {
-				clsDx();
+				midiEventManager.deleteAllEvent();
 			}
 		}
 		if (Input::Key(KEY_INPUT_SPACE) == 1) {
