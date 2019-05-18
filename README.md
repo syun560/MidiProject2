@@ -1,23 +1,18 @@
 # MidiProject2
-## メイン
-### MainScene
+WindowsAPIとDXライブラリを使用して作っているMIDIシーケンサです。
 
-キー操作
+## 主なファイルの説明
+### MainScene.cpp
+キー操作による分岐処理が書かれています。「Q」キーでCUIインターフェースに入れる機能もあります。
 
-### MidiController
+### MidiController.cpp
+MIDI機器を取り扱います。（初期化、メッセージの送信など）
 
-MIDIの初期化
+### MidiEventManager.cpp
+MIDIイベントを操作します。
 
-### MidiEventManager
+### smfIO.cpp
+SMFの読み書きに関する処理
 
-自動作曲
-
-## SMF
-### smfIO
-
-SMFの読み書き
-
-## シーケンス
-### Conducter
-
+### Conducter.cpp
 テンポ、再生速度の管理
