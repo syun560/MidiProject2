@@ -4,7 +4,7 @@
 #include "DebugTimer.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-	SetMainWindowText("MIDIProject");
+	SetMainWindowText("MIDIProject2");
 	ChangeWindowMode(TRUE);
 	SetGraphMode(FMX, FMY, 32);
 	if (DxLib_Init() == -1)	return -1;

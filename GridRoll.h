@@ -18,9 +18,6 @@ class GridRoll {
 	void SetMidiEvent(int bit, int note, int val);
 public:
 	GridRoll();
-	int GetNoteData(int ch, int bit) const;
-	int GetGateData(int ch, int bit) const;
-
 	void Update(int mea, int ch);
 	void Draw() const;
 	void Save(FILE* fp);

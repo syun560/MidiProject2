@@ -114,7 +114,7 @@ int smfIO::write(char* fileName, char* data, int size) {
 }
 
 void smfIO::draw() {
-	/*printfDx("ヘッダチャンク情報\n");
+	printfDx("ヘッダチャンク情報\n");
 	printfDx("タイプ:%c%c%c%c", header.type.c[0], header.type.c[1], header.type.c[2], header.type.c[3]);
 	printfDx(", サイズ:%d", header.size.i);
 	printfDx(", フォーマット:%d", header.format.i);
@@ -126,5 +126,5 @@ void smfIO::draw() {
 		printfDx(", タイプ:%c%c%c%c", track[i].type.c[0], track[i].type.c[1], track[i].type.c[2], track[i].type.c[3]);
 		printfDx(", サイズ:%d", track[i].size.i);
 		printfDx("\n");
-	}*/
+	}
 }

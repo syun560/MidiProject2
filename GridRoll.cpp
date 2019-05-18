@@ -13,45 +13,6 @@ GridRoll::GridRoll() {
 	y = 50;
 }
 
-void GridRoll::KeyUp() {
-	/*for (int i = 0; i < 16; i++) {
-		if (i == 9) continue;
-		for (int j = 0; j < 128; j++) {
-			for (int k = 0; k < 16; k++) {
-				if (Note[i][j][k] != -1) {
-					Note[i][j][k] += 1;
-					if (Note[i][j][k] == 128) Note[i][j][k] = 127;
-				}
-			}
-		}
-	}*/
-}
-
-void GridRoll::KeyDown() {
-	/*for (int i = 0; i < 16; i++) {
-		if (i == 9) continue;
-		for (int j = 0; j < 128; j++) {
-			for (int k = 0; k < 16; k++) {
-				if (Note[i][j][k] != -1) {
-					Note[i][j][k] -= 1;
-					if (Note[i][j][k] == -1) Note[i][j][k] = 0;
-				}
-			}
-		}
-	}*/
-}
-
-
-int GridRoll::GetNoteData(int ch, int bit) const{
-	return 0;
-	//return Note[ch][Mea][bit];
-}
-
-int GridRoll::GetGateData(int ch, int bit) const{
-	return 0;
-	//return RealGate[ch][Mea][bit];
-}
-
 // そのチャンネル内のMidiメッセージを一意に扱うためのidを作る
 int getID(int Mea, int bit, int note) {
 	int Reso = 120; // 分解能

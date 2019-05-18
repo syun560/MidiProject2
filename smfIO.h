@@ -1,4 +1,5 @@
 #pragma once
+#include "global.h"
 
 union UIntInByte {
 	int i;

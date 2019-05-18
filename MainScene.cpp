@@ -59,7 +59,7 @@ int MainScene::Update() {
 			key1 = (int)conductor.GetPreTick();
 			key2 = (int)c;
 			for (int key = key1; key < key2; key++) {
-				// TODO 下の３つの関数を構造体などを使用してひとつにまとめたい
+				// TODO 下の３つの関数を構造体などを使用してひとつにまとめたい、mapのlower関数を使いたい
 				int note = midiEventManager.GetNoteData(ch, key);
 				int gate = midiEventManager.GetGateData(ch, key);
 				int vel = midiEventManager.GetVelData(ch, key);
@@ -80,7 +80,7 @@ int MainScene::Update() {
 		}
 	}
 	else {
-		if (Input::Key(KEY_INPUT_RETURN) == 1) {
+		if (Input::Key(KEY_INPUT_Q) == 1) {
 			commandInput.TurnInputMode();
 			InputMode = true;
 		}
@@ -94,8 +94,8 @@ int MainScene::Update() {
 				conductor.PreMea();
 				if (Input::Key(KEY_INPUT_LSHIFT) > 0) while (conductor.PreMea());
 			}
-			else if (Input::Key(KEY_INPUT_UP) == 1) gridRoll.KeyUp();
-			else if (Input::Key(KEY_INPUT_DOWN) == 1) gridRoll.KeyDown();
+			else if (Input::Key(KEY_INPUT_UP) == 1) midiEventManager.keyUp();
+			else if (Input::Key(KEY_INPUT_DOWN) == 1) midiEventManager.keyDown();
 			else if (Input::Key(KEY_INPUT_D) == 1) gridRoll.DeleteAll();
 		}
 		else if (Input::Key(KEY_INPUT_LSHIFT) > 0) {
@@ -121,7 +121,7 @@ int MainScene::Update() {
 				if (PlayMusic("output.mid", DX_PLAYTYPE_BACK) == -1) printfDx("エラー発生\n");
 				else printfDx("%sを再生\n", "output.mid");
 			}
-			else if (Input::Key(KEY_INPUT_J) == 1) { // 自動作曲
+			else if (Input::Key(KEY_INPUT_RETURN) == 1) { // 自動作曲
 				midiEventManager.deleteAllEvent();
 				midiEventManager.autoCreate(480 * 3 * 32);
 			}

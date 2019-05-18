@@ -12,6 +12,7 @@ public:
 	NoteOnEvent();
 	NoteOnEvent(int Ch, int delta, int Note, int Vel, int Gate);
 	int getMidiShortMsg() const;
+	void transpose(int val);
 
 	int GetCh() const;
 	int GetNote() const;

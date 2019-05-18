@@ -28,6 +28,9 @@ public:
 	int GetGateData(int ch, int key) const;
 	int GetVelData(int ch, int key) const;
 
+	void keyUp();
+	void keyDown();
+
 	void LowerOctave();
 	void HigherOctave();
 

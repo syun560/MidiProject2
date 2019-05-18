@@ -4,6 +4,7 @@ static const char keyName[12][4] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", 
 static const int ScaleC[13] = { 1,1,0,1,0,1,0,1,1,0,1,0,1 };
 static const int avoidcol = GetColor(80, 80, 80);
 static const int gatecol = GetColor(200, 200, 255);
+static const int basecol = GetColor(80, 180, 202);
 
 MidiEventManager::MidiEventManager() {
 	div = 480;
@@ -93,14 +94,31 @@ void MidiEventManager::Update(int focusch, int dmea) {
 	mea = dmea;
 }
 
+void MidiEventManager::keyDown() {
+	for (auto itr = noteMap[activeCh].begin(); itr != noteMap[activeCh].end(); itr++) {
+		itr->second.transpose(-12);
+	}
+}
+
+void MidiEventManager::keyUp() {
+	for (auto itr = noteMap[activeCh].begin(); itr != noteMap[activeCh].end(); itr++) {
+		itr->second.transpose(12);
+	}
+}
+
 void MidiEventManager::draw() {
-	//TODO Baseの範囲のNoteだけを表示したい
+	// Base音を表示
 	DrawFormatString(x - 30, y + BlockHeight * BlockSize, WHITE, "C%d", Base / 12);
+	DrawFormatString(x - 30, y + BlockHeight * BlockSize / 2, WHITE, "C%d", Base / 12 + 1);
+	DrawFormatString(x - 30, y, WHITE, "C%d", Base / 12 + 2);
+
 	// グリッドを描画
 	for (int i = 0; i < BlockWidth; i++) {
 		for (int j = 0; j <= BlockHeight; j++) {
-			if (ScaleC[j] == 0) DrawEdgeBox(i * BlockSize + x, j * BlockSize + y, (i + 1)*BlockSize + x, (j + 1)*BlockSize + y, avoidcol);
-			else DrawBox(i * BlockSize + x, j * BlockSize + y, (i + 1)*BlockSize + x, (j + 1)*BlockSize + y, WHITE, FALSE);
+			if (j % 12 == 0) DrawEdgeBox(i * BlockSize + x, j * BlockSize + y, (i + 1)*BlockSize + x, (j + 1)*BlockSize + y, basecol, avoidcol);
+			else if (ScaleC[j % 12] == 0) DrawEdgeBox(i * BlockSize + x, j * BlockSize + y, (i + 1)*BlockSize + x, (j + 1)*BlockSize + y, BLACK, avoidcol);
+			else DrawEdgeBox(i * BlockSize + x, j * BlockSize + y, (i + 1)*BlockSize + x, (j + 1)*BlockSize + y, WHITE, avoidcol
+			);
 		}
 	}
 
@@ -115,7 +133,7 @@ void MidiEventManager::draw() {
 		int delta = itr->second.GetDelta();
 		int note = itr->second.GetNote();
 		int gate = itr->second.GetGate();
-		DrawFormatString(540, 50 + 20 * j, WHITE, "%5d %4d %2s[%d] %d", tick, delta, keyName[note % 12], note, gate);
+		DrawFormatString(540, 50 + 20 * j, WHITE, "%5d %2s%d(%d) %d", tick, keyName[note % 12], note / 12, note, gate);
 		if (++j == 20) break;
 
 		// Noteを描画
