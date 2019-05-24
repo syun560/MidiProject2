@@ -43,9 +43,7 @@ void MidiEventManager::addNote(int ch, int delta, int notenum, int gate, int vel
 
 void MidiEventManager::autoCreate(int length) {
 	seq = 0;
-
-	// とりあえず、自動作曲の伴奏部分を作ってみる。
-	// ランダムで配置（あまりに飛び飛びの演奏はやめる）
+	// ペンタトニック・スケールでランダムに配置（あまりに飛び飛びの演奏はやめる）
 	static const int majorScale[8] = { 60, 62, 64, 65, 67, 69, 71, 72 };
 	static const int chordC[4] = { 60, 64, 67, 72 };
 	static const int kokken[] = { 54, 56, 58, 61, 63, 66, 68, 70, 73, 75, 78 };
@@ -165,11 +163,10 @@ void MidiEventManager::HigherOctave() {
 int MidiEventManager::getMidiMsgForSMF(char* data) {
 	int i = 0;
 	// 最初の処理
-
 	for (auto itr = noteMap[activeCh].cbegin(); itr != noteMap[activeCh].cend(); itr++) {
 		// デルタタイムの計算
 		int delta = itr->second.GetDelta();
-		if (delta >> 21 != 0) data[i++] = (delta >> 21) | 128;
+		if (delta >> 21 != 0) data[++i] = (delta >> 21) | 128;
 		if (delta >> 14 != 0) data[i++] = ((delta >> 14) & 127) | 128;
 		if (delta >> 7 != 0) data[i++] = ((delta >> 7) & 127) | 128;
 		data[i++] = delta & 127;
