@@ -60,21 +60,21 @@ void GridRoll::Update(int mea, int ch) {
 	int dy = 50;
 	Input::Mouse(&mx, &my);
 	// 左クリックで登録
-	if (Input::MouseL() > 0) {
-		int ex = (mx - dx) / BlockSize;
-		int ey = BlockHeight - (my - dy) / BlockSize;
-		int eey = (my - dy) / BlockSize;
-		if (0 <= ex && ex < BlockWidth) {
-			// 上のGrid
-			if (0 <= ey && ey <= BlockHeight) {
-				SetMidiEvent(ex, ey + Base, 4);
-			}
-			// 下のGrid
-			/*else if (BlockHeight+1 < eey && eey < BlockHeight + 7) {
-				SetMidiEvent(ex, eey - BlockHeight - 2);
-			}*/
-		}
-	}
+	//if (Input::MouseL() > 0) {
+	//	int ex = (mx - dx) / BlockSize;
+	//	int ey = BlockHeight - (my - dy) / BlockSize;
+	//	int eey = (my - dy) / BlockSize;
+	//	if (0 <= ex && ex < BlockWidth) {
+	//		// 上のGrid
+	//		if (0 <= ey && ey <= BlockHeight) {
+	//			SetMidiEvent(ex, ey + Base, 4);
+	//		}
+	//		// 下のGrid
+	//		/*else if (BlockHeight+1 < eey && eey < BlockHeight + 7) {
+	//			SetMidiEvent(ex, eey - BlockHeight - 2);
+	//		}*/
+	//	}
+	//}
 	// 右クリックで削除
 	/*if (Input::MouseR() > 0) {
 		int ex = (mx - dx) / BlockSize;

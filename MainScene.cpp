@@ -115,7 +115,10 @@ int MainScene::Update() {
 			else if (Input::Key(KEY_INPUT_O) == 1) { // ファイル読み込み
 				// FileSave("data.dat");
 				if (smfio.read("input.mid") == -1) printfDx("読み込み失敗\n");
-				else printfDx("読み込み成功\n");
+				else {
+					printfDx("読み込み成功\n");
+					smfio.draw();
+				}
 			}
 			else if (Input::Key(KEY_INPUT_A) == 1) { // 再生
 				if (PlayMusic("output.mid", DX_PLAYTYPE_BACK) == -1) printfDx("エラー発生\n");
@@ -144,6 +147,7 @@ int MainScene::Update() {
 			}
 			else if (Input::Key(KEY_INPUT_R) == 1) conductor.SetRepeat();
 			else if (Input::Key(KEY_INPUT_BACK) == 1) {
+				clsDx();
 				midiEventManager.deleteAllEvent();
 			}
 		}

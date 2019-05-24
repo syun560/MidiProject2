@@ -1,5 +1,6 @@
 # MidiProject2
 WindowsAPIとDXライブラリを使用して作っているMIDIシーケンサです。
+![スクリーンショット](ScreenShot.png)
 
 ## 主なファイルの説明
 ### MainScene.cpp
