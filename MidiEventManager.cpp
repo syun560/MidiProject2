@@ -26,9 +26,13 @@ void MidiEventManager::addNote(int ch, int delta, int notenum, int gate, int vel
 	//	return;
 	//}
 
-	//// ノートオンとノートオフ(vel0)を追加
-	//note[ch].emplace_back(ch, delta, notenum, gate, vel);
-	//note[ch].emplace_back(ch, gate, notenum, 0, 0);
+	// TODO ここで本来は楽器のセットアップを行いたい
+	// 1拍ぶんの休符を追加したい
+	if (seq == 0) {
+		//noteMap[ch].emplace(seq, NoteOnEvent(ch, div * 4, 60, 0, 0));
+		seq += div * 4;
+		return;
+	}
 
 	// mapのキーは分解能（480）* 拍（4）小節（128)をしてもint型に余裕で収まる
 	// INT_MAX = 2147483647;
@@ -125,13 +129,15 @@ void MidiEventManager::draw() {
 	// Condoctorの動きに合わせて表示するようにしたい。
 	int firsttick = mea * div * 4;
 	int endtick = (mea + 1) * div * 4 - 1;
+	DrawFormatString(540, 50, WHITE, " Tick Event  Gate Vel");
 	for (auto itr = noteMap[activeCh].lower_bound(firsttick); itr != noteMap[activeCh].upper_bound(endtick); itr++) {
 		if (itr->second.GetVel() == 0) continue;
 		int tick = itr->first % (div * 4);
 		int delta = itr->second.GetDelta();
 		int note = itr->second.GetNote();
 		int gate = itr->second.GetGate();
-		DrawFormatString(540, 50 + 20 * j, WHITE, "%5d %2s%d(%d) %d %d", tick, keyName[note % 12], note / 12, note, gate);
+		int vel = itr->second.GetVel();
+		DrawFormatString(540, 70 + 20 * j, WHITE, "%5d %2s%d(%d) %d %d", tick, keyName[note % 12], note / 12, note, gate, vel);
 		if (++j == 20) break;
 
 		// Noteを描画
