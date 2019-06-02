@@ -35,7 +35,7 @@ void MidiEventManager::addNote(int ch, int delta, int notenum, int gate, int vel
 	int mapKey1 = seq + delta;
 	int mapKey2 = seq + delta + gate - 1; // NoteOffのキーは次のNoteOnと重ならないように-1する
 	noteMap[ch].emplace(mapKey1, NoteOnEvent(ch, delta, notenum, gate, vel));
-	noteMap[ch].emplace(mapKey1, NoteOnEvent(ch, gate, notenum, 0, 0));
+	noteMap[ch].emplace(mapKey2, NoteOnEvent(ch, gate, notenum, 0, 0));
 
 	// 現在のシーケンス位置を移動
 	seq += delta + gate;
@@ -131,7 +131,7 @@ void MidiEventManager::draw() {
 		int delta = itr->second.GetDelta();
 		int note = itr->second.GetNote();
 		int gate = itr->second.GetGate();
-		DrawFormatString(540, 50 + 20 * j, WHITE, "%5d %2s%d(%d) %d", tick, keyName[note % 12], note / 12, note, gate);
+		DrawFormatString(540, 50 + 20 * j, WHITE, "%5d %2s%d(%d) %d %d", tick, keyName[note % 12], note / 12, note, gate);
 		if (++j == 20) break;
 
 		// Noteを描画

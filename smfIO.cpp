@@ -91,7 +91,7 @@ int smfIO::write(char* fileName, char* data, int size) {
 			// 引数からサイズとデータのアドレスを受け取る
 			
 			track[i].size.i = size;
-			track[i].data = new char[size];
+			//track[i].data = new char[size];
 			track[i].data = data;
 		}
 
