@@ -1,4 +1,5 @@
 Debug/
 .vs/
 Log.txt
-output.mid
+*.mid
+*.dms
