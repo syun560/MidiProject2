@@ -166,23 +166,47 @@ void MidiEventManager::HigherOctave() {
 	if (Base > 127) Base -= 12;
 }
 
-void MidiEventManager::loadMidiMsgFromSMF(char* data, int size) {
+void MidiEventManager::loadMidiMsgFromSMF(unsigned char* data, int size) {
 	int i = 0;
+	double bpm = 0.0f;
+	int a, b, c;
+	printfDx("シーケンス開始\n");
 	while (i < size) {
+		//printfDx("%02X ", data[i++]);
+		//if (i%16 == 0) printfDx("\n");
+		
 		// デルタタイム
-		int delta = data[i++];
+		//int delta = (unsigned char)data[i++];
+		//printfDx("delta = %d ", delta);
 
-		// Conductorトラック
-		if (data[i++] == 0) 
-
-
-		// Systemトラック
-
-		// トラック数分
+		// メッセージ
+		switch (data[i++]) {
+		case 0xFF: // メタイベント
+			switch (data[i++]) {
+			case 0x51: // テンポ
+				i++; // データ長なので飛ばす
+				a = (int)data[i++] << 16;
+				b = (int)data[i++] << 8;
+				c = (int)data[i++];
+				bpm = 60.0 * 1000000 / (a | b | c);
+				// TODO なぜこれが期待した結果にならないのか良くわからない
+				//bpm = 60.0 * 1000000 / (((int)data[i++] << 16) | ((int)data[i++] << 8) | ((int)data[i++]));
+				printfDx("bpm = %.2f\n", bpm);
+				break;
+			case 0x2F: // トラック終端
+				switch (data[i++]) {
+				case 0x00: // トラック終端
+					printfDx("End Of Track (i = %d, size = %d)\n", i, size);
+					break;
+				}
+				break;
+			}
+			break;
+		}
 	}
 }
 
-int MidiEventManager::getMidiMsgForSMF(char* data) {
+int MidiEventManager::getMidiMsgForSMF(unsigned char* data) {
 	int i = 0;
 	// 最初の処理
 	for (auto itr = noteMap[activeCh].cbegin(); itr != noteMap[activeCh].cend(); itr++) {

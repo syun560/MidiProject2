@@ -15,19 +15,19 @@ smfIO::smfIO() {
 	header.division.i = 480;
 }
 
-void smfIO::ConvertEndian(char* input, size_t s) {
+void smfIO::ConvertEndian(UIntInByte& input, size_t s) {
 	char *tmp;
 	tmp = new char[s];
 	for (int i = 0; i < s; ++i) {
-		tmp[i] = input[i];
+		tmp[i] = input.c[i];
 	}
 	for (int i = 1; i <= s; ++i) {
-		input[i - 1] = tmp[s - i];
+		input.c[i - 1] = tmp[s - i];
 	}
 	delete[] tmp;
 }
 
-char* smfIO::getTrackData(int t) {
+unsigned char* smfIO::getTrackData(int t) {
 	return track[t].data;
 }
 
@@ -49,10 +49,10 @@ int smfIO::read(char* fileName) {
 	fread(&header.division, 2, 1, fp);
 
 	if (IsLittleEndian) {
-		ConvertEndian(header.size.c, 4);
-		ConvertEndian(header.format.c, 2);
-		ConvertEndian(header.track.c, 2);
-		ConvertEndian(header.division.c, 2);
+		ConvertEndian(header.size, 4);
+		ConvertEndian(header.format, 2);
+		ConvertEndian(header.track, 2);
+		ConvertEndian(header.division, 2);
 	}
 
 	// トラックチャンク読み取り
@@ -62,10 +62,11 @@ int smfIO::read(char* fileName) {
 		fread(&track[i].type, 4, 1, fp);
 		fread(&track[i].size, 4, 1, fp);
 		if (IsLittleEndian) {
-			ConvertEndian(track[i].size.c, 4);
+			ConvertEndian(track[i].size, 4);
 		}
-		if (track[i].data != NULL) delete[] track[i].data;
-		track[i].data = new char[track[i].size.i];
+		// TODO メモリリークのおそれ
+		// if (track[i].data != NULL) delete[] track[i].data;
+		track[i].data = new unsigned char[track[i].size.i];
 		fread(track[i].data, track[i].size.i, sizeof(char), fp);
 	}
 
@@ -87,7 +88,7 @@ void smfIO::kakikomi(FILE* fp, UIntInByte& input, int size, bool convertFlag) {
 	else fwrite(&input, size, 1, fp);
 }
 
-int smfIO::write(char* fileName, char* data, int size) {
+int smfIO::write(char* fileName, unsigned char* data, int size) {
 	FILE* fp;
 	if ((fp = fopen(fileName, "wb")) == NULL) {
 		return -1;
@@ -114,11 +115,11 @@ int smfIO::write(char* fileName, char* data, int size) {
 		// ここ書き込んだ後にもう一回track[i].sizeが必要になるから2回ConvertEndianが必要なんだなあ
 		fwrite(&track[i].type, 4, 1, fp);
 		if (IsLittleEndian) {
-			ConvertEndian(track[i].size.c, 4);
+			ConvertEndian(track[i].size, 4);
 		}
 		fwrite(&track[i].size, 4, 1, fp);
 		if (IsLittleEndian) {
-			ConvertEndian(track[i].size.c, 4);
+			ConvertEndian(track[i].size, 4);
 		}
 
 		// データ書き込み

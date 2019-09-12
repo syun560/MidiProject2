@@ -107,16 +107,16 @@ int MainScene::Update() {
 		else {
 			if (Input::Key(KEY_INPUT_S) == 1) {
 				// FileOpen("data.dat");
-				char data[10000]; // TODO できれば動的に決定すべき
+				unsigned char data[10000]; // TODO できれば動的に決定すべき
 				int size = midiEventManager.getMidiMsgForSMF(data);
 				if (smfio.write("output.mid", data, size) == -1) printfDx("書き込み失敗\n");
 				else printfDx("書き込み成功\n");
 			}
 			else if (Input::Key(KEY_INPUT_O) == 1) { // ファイル読み込み
 				// FileSave("data.dat");
-				if (smfio.read("input.mid") == -1) printfDx("読み込み失敗\n");
+				if (smfio.read("kaeru.mid") == -1) printfDx("読み込み失敗\n");
 				else {
-					for (int i = 0; i < smfio.getTrackNum(); ++i) {
+					for (int i = 0; i < 1/*smfio.getTrackNum()*/; ++i) {
 						midiEventManager.loadMidiMsgFromSMF(smfio.getTrackData(i), smfio.getTrackSize(i));
 					}
 					printfDx("読み込み成功\n");
