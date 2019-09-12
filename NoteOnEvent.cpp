@@ -20,6 +20,10 @@ NoteOnEvent::NoteOnEvent(int Ch, int Delta, int Note, int Gate, int Vel) {
 	note = Note;
 }
 
+void NoteOnEvent::SetGate(int val) {
+	gate = val;
+}
+
 void NoteOnEvent::transpose(int val) {
 	note += val;
 	if (note >= 128 || note < 0) note -= val;

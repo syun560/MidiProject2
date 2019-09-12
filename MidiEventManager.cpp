@@ -20,13 +20,6 @@ MidiEventManager::MidiEventManager() {
 }
 
 void MidiEventManager::addNote(int ch, int delta, int notenum, int gate, int vel) {
-	// 1拍ぶんの休符を追加したい
-	//if (seq == 0) {
-	//	note[ch].emplace_back(ch, div * 4, 60, 0, 0);
-	//	seq += div * 4;
-	//	return;
-	//}
-
 	// TODO ここで本来は楽器のセットアップを行いたい
 	// 1拍ぶんの休符を追加したい
 	if (seq == 0) {
@@ -44,6 +37,18 @@ void MidiEventManager::addNote(int ch, int delta, int notenum, int gate, int vel
 
 	// 現在のシーケンス位置を移動
 	seq += delta + gate;
+}
+
+void MidiEventManager::addStartNote(int delta, int ch, int notenum, int vel) {
+	int key = seq + delta;
+	noteMap[ch].emplace(key, NoteOnEvent(ch, delta, notenum, 400, vel));
+	seq += delta;
+}
+
+void MidiEventManager::addEndNote(int delta, int ch, int notenum) {
+	int key = seq + delta - 1;
+	noteMap[ch].emplace(key, NoteOnEvent(ch, delta, notenum, 0, 0));
+	seq += delta;
 }
 
 void MidiEventManager::autoCreate(int length) {
@@ -175,7 +180,7 @@ void MidiEventManager::loadMidiMsgFromSMF(int track, unsigned char* data, int si
 	while (i < size) {
 		//printfDx("%02X ", data[i++]);
 		//if (i%16 == 0) printfDx("\n");
-		
+
 		// デルタタイム
 		int delta = 0;
 		while ((d = data[i++]) & 0x80) {
@@ -183,9 +188,30 @@ void MidiEventManager::loadMidiMsgFromSMF(int track, unsigned char* data, int si
 			delta <<= 7;
 		}
 		delta = delta | d;
-		printfDx("delta = %d ", delta);
+		printfDx("(%d) ", delta);
 
-		// メッセージ
+		// チャンネルメッセージ
+		if ((data[i] & 0xF0) == 0x90) {
+			// ノートオン
+			int ch = data[i++] & 0x0F;
+			int note = data[i++];
+			int vel = data[i++];
+			printfDx("track:%d, Ch:%d, Note:%d, Vel:%d", track, ch, note, vel);
+			addStartNote(delta, track, note, vel);
+
+			continue;
+		}
+		if ((data[i] & 0xF0) == 0x80) {
+			// ノートオフ
+			int ch = data[i++] & 0x0F;
+			int note = data[i++];
+			int vel = data[i++];
+			printfDx("track:%d, Ch:%d, Note:%d, Vel:%d \n", track, ch, note, vel);
+			addEndNote(delta, track, note);
+			continue;
+		}
+
+		// メタイベント
 		switch (data[i++]) {
 		case 0xFF: // メタイベント
 			switch (data[i++]) {
@@ -221,6 +247,18 @@ void MidiEventManager::loadMidiMsgFromSMF(int track, unsigned char* data, int si
 				break;
 			}
 			break;
+		}
+	}
+
+	// 後からGateを設定する
+	for (auto itr = noteMap[track].begin(); itr != noteMap[track].end(); ++itr) {
+		if (itr->second.GetVel() > 0) {
+			for (auto itr2 = noteMap[track].upper_bound(itr->first); itr2 != noteMap[track].end(); ++itr2) {
+				if (itr2->second.GetVel() == 0) {
+					itr->second.SetGate(itr2->first - itr->first);
+					break;
+				}
+			}
 		}
 	}
 }

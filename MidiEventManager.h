@@ -18,7 +18,9 @@ class MidiEventManager {
 	std::map<int, NoteOnEvent> noteMap[16];
 public:
 	MidiEventManager();
-	void addNote(int Ch, int delta, int notenum, int gate, int vel=100);
+	void addNote(int Ch, int delta, int notenum, int gate, int vel = 100);
+	void addStartNote(int delta, int ch, int notenum, int vel);
+	void addEndNote(int delta, int ch, int notenum);
 	void deleteAllEvent();
 	void autoCreate(int length=480);
 	void Update(int focusch, int tick);

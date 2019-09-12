@@ -116,7 +116,7 @@ int MainScene::Update() {
 				// FileSave("data.dat");
 				if (smfio.read("kaeru.mid") == -1) printfDx("“Ç‚İ‚İ¸”s\n");
 				else {
-					for (int i = 0; i < 1; ++i) {
+					for (int i = 0; i < smfio.getTrackNum(); ++i) {
 						midiEventManager.loadMidiMsgFromSMF(i, smfio.getTrackData(i), smfio.getTrackSize(i));
 					}
 					printfDx("“Ç‚İ‚İ¬Œ÷\n");
@@ -150,8 +150,10 @@ int MainScene::Update() {
 			}
 			else if (Input::Key(KEY_INPUT_R) == 1) conductor.SetRepeat();
 			else if (Input::Key(KEY_INPUT_BACK) == 1) {
-				clsDx();
 				midiEventManager.deleteAllEvent();
+			}
+			else if (Input::Key(KEY_INPUT_DELETE) == 1) {
+				clsDx();
 			}
 		}
 		if (Input::Key(KEY_INPUT_SPACE) == 1) {
