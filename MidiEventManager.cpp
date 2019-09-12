@@ -166,6 +166,22 @@ void MidiEventManager::HigherOctave() {
 	if (Base > 127) Base -= 12;
 }
 
+void MidiEventManager::loadMidiMsgFromSMF(char* data, int size) {
+	int i = 0;
+	while (i < size) {
+		// デルタタイム
+		int delta = data[i++];
+
+		// Conductorトラック
+		if (data[i++] == 0) 
+
+
+		// Systemトラック
+
+		// トラック数分
+	}
+}
+
 int MidiEventManager::getMidiMsgForSMF(char* data) {
 	int i = 0;
 	// 最初の処理

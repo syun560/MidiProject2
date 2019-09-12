@@ -7,18 +7,32 @@ smfIO::smfIO() {
 	int check = 1;
 	if (*(char *)&check) IsLittleEndian = true;
 	else IsLittleEndian = false;
+
+	header.type.c[0] = 'M'; header.type.c[1] = 'T'; header.type.c[2] = 'h'; header.type.c[3] = 'd';
+	header.size.i = 6;
+	header.format.i = 1;
+	header.track.i = 18; // ここ注意
+	header.division.i = 480;
 }
 
-void smfIO::ConvertEndian(UIntInByte& input, size_t s) {
+void smfIO::ConvertEndian(char* input, size_t s) {
 	char *tmp;
 	tmp = new char[s];
 	for (int i = 0; i < s; ++i) {
-		tmp[i] = input.c[i];
+		tmp[i] = input[i];
 	}
 	for (int i = 1; i <= s; ++i) {
-		input.c[i - 1] = tmp[s - i];
+		input[i - 1] = tmp[s - i];
 	}
 	delete[] tmp;
+}
+
+char* smfIO::getTrackData(int t) {
+	return track[t].data;
+}
+
+int smfIO::getTrackSize(int t) {
+	return track[t].size.i;
 }
 
 int smfIO::read(char* fileName) {
@@ -35,27 +49,42 @@ int smfIO::read(char* fileName) {
 	fread(&header.division, 2, 1, fp);
 
 	if (IsLittleEndian) {
-		ConvertEndian(header.size, 4);
-		ConvertEndian(header.format, 2);
-		ConvertEndian(header.track, 2);
-		ConvertEndian(header.division, 2);
+		ConvertEndian(header.size.c, 4);
+		ConvertEndian(header.format.c, 2);
+		ConvertEndian(header.track.c, 2);
+		ConvertEndian(header.division.c, 2);
 	}
 
 	// トラックチャンク読み取り
-	track = new TrackChunk[16];
+	if (track != NULL) delete[] track;
+	track = new TrackChunk[header.track.i];
 	for (int i = 0; i < header.track.i; ++i) {
 		fread(&track[i].type, 4, 1, fp);
 		fread(&track[i].size, 4, 1, fp);
 		if (IsLittleEndian) {
-			ConvertEndian(track[i].size, 4);
+			ConvertEndian(track[i].size.c, 4);
 		}
+		if (track[i].data != NULL) delete[] track[i].data;
 		track[i].data = new char[track[i].size.i];
 		fread(track[i].data, track[i].size.i, sizeof(char), fp);
 	}
 
-	// draw();
+	
 	fclose(fp);
 	return 0;
+}
+
+int smfIO::getTrackNum() {
+	return header.track.i;
+}
+
+void smfIO::kakikomi(FILE* fp, UIntInByte& input, int size, bool convertFlag) {
+	if (IsLittleEndian && convertFlag) {
+		for (int i = size - 1; i >= 0; --i) {
+			fputc(input.c[i], fp);
+		}
+	}
+	else fwrite(&input, size, 1, fp);
 }
 
 int smfIO::write(char* fileName, char* data, int size) {
@@ -65,24 +94,11 @@ int smfIO::write(char* fileName, char* data, int size) {
 	}
 
 	// ヘッダチャンク書き込み
-	if (IsLittleEndian) {
-		ConvertEndian(header.size, 4);
-		ConvertEndian(header.format, 2);
-		ConvertEndian(header.track, 2);
-		ConvertEndian(header.division, 2);
-	}
-	// TODO 読み込み時のファイルデータに依存しているため、実行時に変更可能なものとしたい
-	fwrite(&header.type, 4, 1, fp); // MThdで大丈夫？
-	fwrite(&header.size, 4, 1, fp); //　固定8だよね？
-	fwrite(&header.format, 2, 1, fp); // 4で大丈夫？
-	fwrite(&header.track, 2, 1, fp); // 実行時に変更されるかも
-	fwrite(&header.division, 2, 1, fp); // ふつうは480
-	if (IsLittleEndian) {
-		ConvertEndian(header.size, 4);
-		ConvertEndian(header.format, 2);
-		ConvertEndian(header.track, 2);
-		ConvertEndian(header.division, 2);
-	}
+	kakikomi(fp, header.type, 4, false);
+	kakikomi(fp, header.size, 4);
+	kakikomi(fp, header.format, 2);
+	kakikomi(fp, header.track, 2);
+	kakikomi(fp, header.division, 2);
 
 	// トラックチャンク書き込み
 	for (int i = 0; i < header.track.i; ++i) {
@@ -98,11 +114,11 @@ int smfIO::write(char* fileName, char* data, int size) {
 		// ここ書き込んだ後にもう一回track[i].sizeが必要になるから2回ConvertEndianが必要なんだなあ
 		fwrite(&track[i].type, 4, 1, fp);
 		if (IsLittleEndian) {
-			ConvertEndian(track[i].size, 4);
+			ConvertEndian(track[i].size.c, 4);
 		}
 		fwrite(&track[i].size, 4, 1, fp);
 		if (IsLittleEndian) {
-			ConvertEndian(track[i].size, 4);
+			ConvertEndian(track[i].size.c, 4);
 		}
 
 		// データ書き込み

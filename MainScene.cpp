@@ -116,6 +116,9 @@ int MainScene::Update() {
 				// FileSave("data.dat");
 				if (smfio.read("input.mid") == -1) printfDx("“Ç‚İ‚İ¸”s\n");
 				else {
+					for (int i = 0; i < smfio.getTrackNum(); ++i) {
+						midiEventManager.loadMidiMsgFromSMF(smfio.getTrackData(i), smfio.getTrackSize(i));
+					}
 					printfDx("“Ç‚İ‚İ¬Œ÷\n");
 					smfio.draw();
 				}
