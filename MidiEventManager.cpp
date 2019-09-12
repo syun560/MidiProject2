@@ -172,7 +172,7 @@ void MidiEventManager::HigherOctave() {
 	if (Base > 127) Base -= 12;
 }
 
-void MidiEventManager::loadMidiMsgFromSMF(int track, unsigned char* data, int size) {
+double MidiEventManager::loadMidiMsgFromSMF(int track, unsigned char* data, int size) {
 	int i = 0;
 	double bpm = 0.0f;
 	int a, b, c, d;
@@ -261,6 +261,7 @@ void MidiEventManager::loadMidiMsgFromSMF(int track, unsigned char* data, int si
 			}
 		}
 	}
+	return bpm;
 }
 
 int MidiEventManager::getMidiMsgForSMF(unsigned char* data) {

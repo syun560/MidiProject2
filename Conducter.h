@@ -25,6 +25,7 @@ public:
 
 	void SetRepeat();
 	void PlayOrPause();
+	void SetTempo(int val);
 	void Save(FILE* fp);
 	void Load(FILE* fp);
 	void Draw(int x, int y) const;

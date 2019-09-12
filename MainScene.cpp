@@ -117,7 +117,8 @@ int MainScene::Update() {
 				if (smfio.read("kaeru.mid") == -1) printfDx("ì«Ç›çûÇ›é∏îs\n");
 				else {
 					for (int i = 0; i < smfio.getTrackNum(); ++i) {
-						midiEventManager.loadMidiMsgFromSMF(i, smfio.getTrackData(i), smfio.getTrackSize(i));
+						double bpm = midiEventManager.loadMidiMsgFromSMF(i, smfio.getTrackData(i), smfio.getTrackSize(i));
+						if (bpm != 0.0) conductor.SetTempo(bpm);
 					}
 					printfDx("ì«Ç›çûÇ›ê¨å˜\n");
 					smfio.draw();

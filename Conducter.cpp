@@ -110,6 +110,10 @@ int Conducter::GetMea() const {
 	return mea;
 }
 
+void Conducter::SetTempo(int val) {
+	bpm = val;
+}
+
 void Conducter::Save(FILE* fp) {
 	fwrite(&bpm, sizeof(double), 1, fp);
 }
