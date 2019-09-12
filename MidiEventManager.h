@@ -36,5 +36,5 @@ public:
 
 	// ファイル書き込みのためのデータを作成して、渡す
 	int getMidiMsgForSMF(unsigned char* data);
-	void loadMidiMsgFromSMF(unsigned char* data, int size);
+	void loadMidiMsgFromSMF(int track, unsigned char* data, int size);
 };

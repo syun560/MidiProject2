@@ -116,8 +116,8 @@ int MainScene::Update() {
 				// FileSave("data.dat");
 				if (smfio.read("kaeru.mid") == -1) printfDx("“Ç‚İ‚İ¸”s\n");
 				else {
-					for (int i = 0; i < 1/*smfio.getTrackNum()*/; ++i) {
-						midiEventManager.loadMidiMsgFromSMF(smfio.getTrackData(i), smfio.getTrackSize(i));
+					for (int i = 0; i < 1; ++i) {
+						midiEventManager.loadMidiMsgFromSMF(i, smfio.getTrackData(i), smfio.getTrackSize(i));
 					}
 					printfDx("“Ç‚İ‚İ¬Œ÷\n");
 					smfio.draw();

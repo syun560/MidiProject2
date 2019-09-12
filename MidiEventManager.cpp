@@ -1,4 +1,5 @@
 #include "MidiEventManager.h"
+#include "math.h"
 
 static const char keyName[12][4] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 static const int ScaleC[13] = { 1,1,0,1,0,1,0,1,1,0,1,0,1 };
@@ -166,23 +167,36 @@ void MidiEventManager::HigherOctave() {
 	if (Base > 127) Base -= 12;
 }
 
-void MidiEventManager::loadMidiMsgFromSMF(unsigned char* data, int size) {
+void MidiEventManager::loadMidiMsgFromSMF(int track, unsigned char* data, int size) {
 	int i = 0;
 	double bpm = 0.0f;
-	int a, b, c;
+	int a, b, c, d;
 	printfDx("シーケンス開始\n");
 	while (i < size) {
 		//printfDx("%02X ", data[i++]);
 		//if (i%16 == 0) printfDx("\n");
 		
 		// デルタタイム
-		//int delta = (unsigned char)data[i++];
-		//printfDx("delta = %d ", delta);
+		int delta = 0;
+		while ((d = data[i++]) & 0x80) {
+			delta = delta | (d & 0x7F);
+			delta <<= 7;
+		}
+		delta = delta | d;
+		printfDx("delta = %d ", delta);
 
 		// メッセージ
 		switch (data[i++]) {
 		case 0xFF: // メタイベント
 			switch (data[i++]) {
+			case 0x02: // 著作権
+				i += data[i++]; // 飛ばす
+				printfDx("著作権\n");
+				break;
+			case 0x03: // シーケンス名
+				i += data[i++]; // 飛ばす
+				printfDx("シーケンス\n");
+				break;
 			case 0x51: // テンポ
 				i++; // データ長なので飛ばす
 				a = (int)data[i++] << 16;
@@ -192,6 +206,11 @@ void MidiEventManager::loadMidiMsgFromSMF(unsigned char* data, int size) {
 				// TODO なぜこれが期待した結果にならないのか良くわからない
 				//bpm = 60.0 * 1000000 / (((int)data[i++] << 16) | ((int)data[i++] << 8) | ((int)data[i++]));
 				printfDx("bpm = %.2f\n", bpm);
+				break;
+			case 0x58: // 拍子設定[4byte]
+				i++; // データ長なので飛ばす
+				printfDx("拍子：%d/%d\n", (int)pow((double)data[i++], 2.0), data[i++]);
+				i += 2; // 重要でない情報
 				break;
 			case 0x2F: // トラック終端
 				switch (data[i++]) {
