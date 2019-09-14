@@ -21,9 +21,11 @@ class MainScene {
 	void FileOpen(const char* filename);
 	void FileSave(const char* filename);
 	bool legacyMode;
+	int rootNote, baseNote;
 
 	// デバッグ用
 	int key1, key2;
+	int tenkai(int key);
 public:
 	MainScene();
 	int Update();

@@ -270,6 +270,14 @@ void MidiController::Play(int ch,int note,int gate, int vel) {
 	cs.emplace_back(ch, note, gate);
 }
 
+void MidiController::PlayChord(int ch, int baseNote, int gate, int vel, bool isMinor, bool isSeventh) {
+	Play(ch, baseNote, gate, vel);
+	if (isMinor) Play(ch, baseNote + 3, gate, vel);
+	else Play(ch, baseNote + 4, gate, vel);
+	Play(ch, baseNote + 7, gate, vel);
+	if (isSeventh) Play(ch, baseNote + 10, gate, vel);
+}
+
 void MidiController::Stop(int ch, int note) {
 	DWORD NoteOff = 0 << 16 | note << 8 | 9 << 4 | ch;
 	midiOutShortMsg(g_hMidi, NoteOff);

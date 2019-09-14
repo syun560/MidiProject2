@@ -28,10 +28,9 @@ void MidiEventManager::addNote(int ch, int delta, int notenum, int gate, int vel
 		return;
 	}
 
-	// mapのキーは分解能（480）* 拍（4）小節（128)をしてもint型に余裕で収まる
-	// INT_MAX = 2147483647;
-	int mapKey1 = seq + delta;
-	int mapKey2 = seq + delta + gate - 1; // NoteOffのキーは次のNoteOnと重ならないように-1する
+	// key = resolution(480) * note(128) * beat(4)* mea(128) = 31457280 < INT_MAX(2147483647)
+	int mapKey1 = (seq + delta) * 128 + notenum;
+	int mapKey2 = (seq + delta + gate - 1) * 128 + notenum; // NoteOffのキーは次のNoteOnと重ならないように-1する
 	noteMap[ch].emplace(mapKey1, NoteOnEvent(ch, delta, notenum, gate, vel));
 	noteMap[ch].emplace(mapKey2, NoteOnEvent(ch, gate, notenum, 0, 0));
 
