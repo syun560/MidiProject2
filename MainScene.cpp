@@ -8,9 +8,11 @@ static const char CIRCLE_OF_FIFTH[2][12][5] = {
 	"Am", "Em", "Bm", "F♯m", "C♯m", "G#m", "D♯m", "B♭m", "Fm",  "Cm",  "Gm",  "Dm"
 };
 
-static const char CHORD_NAME[2][12][5] = {
+static const char CHORD_NAME[4][12][6] = {
 	"C", "D♭", "D",  "E♭", "E",  "F",  "G♭", "G",  "A♭", "A",  "B♭", "B",
 	"C", "C#m", "Dm", "D#m", "Em", "Fm", "F#m", "Gm", "G#m", "Am", "B♭m", "Bm",
+	"C7", "D♭7", "D7",  "E♭7", "E7",  "F7",  "G♭7", "G7",  "A♭7", "A7",  "B♭7", "B7",
+	"C7", "C#m7", "Dm7", "D#m7", "Em7", "Fm7", "F#m7", "Gm7", "G#m7", "Am7", "B♭m7", "Bm7",
 };
 
 MainScene::MainScene() {
@@ -190,28 +192,28 @@ int MainScene::Update() {
 			midiController.PlayChord(midiController.GetFocusCh(), tenkai(0), 480 * 2, 100);
 		}
 		else if (Input::Key(KEY_INPUT_NUMPAD4) == 1) { // Ⅳの和音
-			if (Input::Key(KEY_INPUT_LSHIFT) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(5), 480 * 2, 100, false, true);
+			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(5), 480 * 2, 100, false, true);
 			else midiController.PlayChord(midiController.GetFocusCh(), tenkai(5), 480 * 2, 100);
 		}
 		else if (Input::Key(KEY_INPUT_NUMPAD5) == 1) { // Ⅰの和音
-			midiController.PlayChord(midiController.GetFocusCh(), tenkai(0), 480 * 2, 100);
-			if (Input::Key(KEY_INPUT_LSHIFT) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(0), 480 * 2, 100, false, true);
+			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(0), 480 * 2, 100, false, true);
+			else midiController.PlayChord(midiController.GetFocusCh(), tenkai(0), 480 * 2, 100);
 		}
 		else if (Input::Key(KEY_INPUT_NUMPAD6) == 1) { // Ⅴの和音
-			midiController.PlayChord(midiController.GetFocusCh(), tenkai(7), 480 * 2, 100);
-			if (Input::Key(KEY_INPUT_LSHIFT) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(0), 480 * 2, 100, false, true);
+			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(0), 480 * 2, 100, false, true);
+			else midiController.PlayChord(midiController.GetFocusCh(), tenkai(7), 480 * 2, 100);
 		}
 		else if (Input::Key(KEY_INPUT_NUMPAD1) == 1) { // Ⅱmの和音
-			midiController.PlayChord(midiController.GetFocusCh(), tenkai(2), 480 * 2, 100, true);
-			if (Input::Key(KEY_INPUT_LSHIFT) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(2), 480 * 2, 100, true, true);
+			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(2), 480 * 2, 100, true, true);
+			else midiController.PlayChord(midiController.GetFocusCh(), tenkai(2), 480 * 2, 100, true);
 		}
 		else if (Input::Key(KEY_INPUT_NUMPAD2) == 1) { // Ⅵmの和音
-			midiController.PlayChord(midiController.GetFocusCh(), tenkai(9), 480 * 2, 100, true);
-			if (Input::Key(KEY_INPUT_LSHIFT) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(2), 480 * 2, 100, true, true);
+			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(9), 480 * 2, 100, true, true);
+			else midiController.PlayChord(midiController.GetFocusCh(), tenkai(9), 480 * 2, 100, true);
 		}
 		else if (Input::Key(KEY_INPUT_NUMPAD3) == 1) { // Ⅲmの和音
-			midiController.PlayChord(midiController.GetFocusCh(), tenkai(4), 480 * 2, 100, true);
-			if (Input::Key(KEY_INPUT_LSHIFT) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(2), 480 * 2, 100, true, true);
+			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(4), 480 * 2, 100, true, true);
+			else midiController.PlayChord(midiController.GetFocusCh(), tenkai(4), 480 * 2, 100, true);
 		}
 		if (Input::Key(KEY_INPUT_SPACE) == 1) {
 			midiController.AllStop();
@@ -240,13 +242,16 @@ void MainScene::Draw(){
 
 	// コードを表示
 	static const int CHORD_X = 400, CHORD_Y = 400;
-	static const int MARGIN = 40;
-	DrawString(CHORD_X - MARGIN, CHORD_Y         , CHORD_NAME[0][(baseNote + 5) % 12], WHITE);
-	DrawString(CHORD_X         , CHORD_Y         , CHORD_NAME[0][(baseNote + 0) % 12] , WHITE);
-	DrawString(CHORD_X + MARGIN, CHORD_Y         , CHORD_NAME[0][(baseNote + 7) % 12], WHITE);
-	DrawString(CHORD_X - MARGIN, CHORD_Y + MARGIN, CHORD_NAME[1][(baseNote + 2) % 12], WHITE);
-	DrawString(CHORD_X         , CHORD_Y + MARGIN, CHORD_NAME[1][(baseNote + 9) % 12], WHITE);
-	DrawString(CHORD_X + MARGIN, CHORD_Y + MARGIN, CHORD_NAME[1][(baseNote + 4) % 12], WHITE);
+	static const int MARGIN = 50;
+	int chordType = 0;
+	if (Input::Key(KEY_INPUT_LCONTROL) > 0) chordType = 2;
+	
+	DrawString(CHORD_X - MARGIN, CHORD_Y         , CHORD_NAME[0 + chordType][(baseNote + 5) % 12], WHITE);
+	DrawString(CHORD_X         , CHORD_Y         , CHORD_NAME[0 + chordType][(baseNote + 0) % 12], WHITE);
+	DrawString(CHORD_X + MARGIN, CHORD_Y         , CHORD_NAME[0 + chordType][(baseNote + 7) % 12], WHITE);
+	DrawString(CHORD_X - MARGIN, CHORD_Y + MARGIN, CHORD_NAME[1 + chordType][(baseNote + 2) % 12], WHITE);
+	DrawString(CHORD_X         , CHORD_Y + MARGIN, CHORD_NAME[1 + chordType][(baseNote + 9) % 12], WHITE);
+	DrawString(CHORD_X + MARGIN, CHORD_Y + MARGIN, CHORD_NAME[1 + chordType][(baseNote + 4) % 12], WHITE);
 
 	// TODO:テンポやプレイ状況、スケールを表示
 	// コードを表示
