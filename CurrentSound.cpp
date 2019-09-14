@@ -13,7 +13,8 @@ CurrentSound::CurrentSound(int ch, int note, double gate, bool legato) {
 }
 
 int CurrentSound::Update(double delta) {
-	GateRemain -= delta;
+	if(!Legato) GateRemain -= delta;
+	Legato = false;
 	if (GateRemain <= 0.0) {
 		return -1;
 	}
@@ -23,6 +24,10 @@ int CurrentSound::Update(double delta) {
 bool CurrentSound::IsCollide(int ch, int note) const{
 	if (Ch == ch && Note == note) return true;
 	else return false;
+}
+
+void CurrentSound::hold() {
+	Legato = true;
 }
 
 int CurrentSound::GetCh() const{

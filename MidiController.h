@@ -23,7 +23,9 @@ public:
 	int Init();
 	void Update(double delta);
 	void Play(int ch, int note, int gate, int vel);
-	void PlayChord(int ch, int baseNote, int gate, int vel, bool isMinor=false, bool isSeventh=false);
+	void PlayHold(int ch, int note, int vel);
+	void PlayChord(int ch, int baseNote, int gate, int vel, bool isMinor = false, bool isSeventh = false);
+	void PlayChordHold(int ch, int baseNote, int vel, bool isMinor=false, bool isSeventh=false);
 	void AllStop();
 	void ProgramChange(int ch, int num);
 	void NextProgram();

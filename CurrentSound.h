@@ -12,6 +12,7 @@ public:
 	int GetNote() const;
 	int GetCh() const;
 	double GetGate() const;
+	void hold();
 
 	bool IsCollide(int ch, int note) const;
 };

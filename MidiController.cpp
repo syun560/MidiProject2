@@ -270,12 +270,33 @@ void MidiController::Play(int ch,int note,int gate, int vel) {
 	cs.emplace_back(ch, note, gate);
 }
 
+void MidiController::PlayHold(int ch, int note, int vel) {
+	// ‚·‚Å‚É“¯‚¶‰¹‚ª“o˜^‚³‚ê‚Ä‚¢‚½‚çA‰¹‚ÌŽõ–½‚ð‰„–½‚³‚¹‚é
+	for (auto itr = cs.begin(); itr != cs.end(); itr++) {
+		if (itr->IsCollide(ch, note)) {
+			itr->hold();
+			return;
+		}
+	}
+	DWORD NoteOn = vel << 16 | note << 8 | 9 << 4 | ch;
+	midiOutShortMsg(g_hMidi, NoteOn);
+	cs.emplace_back(ch, note, 1, true);
+}
+
 void MidiController::PlayChord(int ch, int baseNote, int gate, int vel, bool isMinor, bool isSeventh) {
 	Play(ch, baseNote, gate, vel);
 	if (isMinor) Play(ch, baseNote + 3, gate, vel);
 	else Play(ch, baseNote + 4, gate, vel);
 	Play(ch, baseNote + 7, gate, vel);
 	if (isSeventh) Play(ch, baseNote + 10, gate, vel);
+}
+
+void MidiController::PlayChordHold(int ch, int baseNote, int vel, bool isMinor, bool isSeventh) {
+	PlayHold(ch, baseNote, vel);
+	if (isMinor) PlayHold(ch, baseNote + 3, vel);
+	else PlayHold(ch, baseNote + 4, vel);
+	PlayHold(ch, baseNote + 7, vel);
+	if (isSeventh) PlayHold(ch, baseNote + 10, vel);
 }
 
 void MidiController::Stop(int ch, int note) {
@@ -308,11 +329,11 @@ void MidiController::Draw() const{
 		else DrawFormatString(320, 50 + 20*i, WHITE, "%s (%d)", InstrumentsName[NowProgram[i]], NowProgram[i]);
 	}
 	// –Â‚Á‚Ä‚¢‚é‰¹‚ð•\Ž¦‚·‚é
-	/*int j = 18;
+	int j = 0;
 	for (auto itr = cs.cbegin(); itr != cs.cend(); itr++) {
 		DrawFormatString(50, j * 20, WHITE, "CH:%d Note:%d Gate:%.2f", itr->GetCh(), itr->GetNote(), itr->GetGate());
 		j++;
-	}*/
+	}
 	panel.Draw(320, 50);
 }
 
