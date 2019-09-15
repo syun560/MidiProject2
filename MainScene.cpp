@@ -118,8 +118,14 @@ int MainScene::Update() {
 				conductor.PreMea();
 				if (Input::Key(KEY_INPUT_LSHIFT) > 0) while (conductor.PreMea());
 			}
-			else if (Input::Key(KEY_INPUT_UP) == 1) midiEventManager.keyUp();
-			else if (Input::Key(KEY_INPUT_DOWN) == 1) midiEventManager.keyDown();
+			else if (Input::Key(KEY_INPUT_UP) == 1) {
+				midiEventManager.keyUp();
+				if(rootNote < 128 - 12) rootNote += 12;
+			}
+			else if (Input::Key(KEY_INPUT_DOWN) == 1) {
+				midiEventManager.keyDown();
+				if(rootNote >= 12) rootNote -= 12;
+			}
 			else if (Input::Key(KEY_INPUT_D) == 1) gridRoll.DeleteAll();
 		}
 		else if (Input::Key(KEY_INPUT_LSHIFT) > 0) {
@@ -218,7 +224,10 @@ int MainScene::Update() {
 			else midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(9), 100, true);
 		}
 		else if (Input::Key(KEY_INPUT_NUMPAD3) > 0) { // Ⅲmの和音
-			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(4), 100, true, 1);
+			if (Input::Key(KEY_INPUT_LCONTROL) > 0) {
+				if (Input::Key(KEY_INPUT_LALT) > 0) midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(4), 100, false, 1);
+				else midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(4), 100, true, 1);
+			}
 			else midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(4), 100, true);
 		}
 		if (Input::Key(KEY_INPUT_SPACE) == 1) {
@@ -275,7 +284,7 @@ void MainScene::Draw(){
 	}*/
 
 	// コードを表示
-	static const int CHORD_X = 400, CHORD_Y = 400;
+	static const int CHORD_X = 400, CHORD_Y = 440;
 	static const int MARGIN = 50;
 	if (Input::Key(KEY_INPUT_LCONTROL) > 0) {
 		DrawString(CHORD_X - MARGIN, CHORD_Y, CHORD_NAME[4][(baseNote + 5) % 12], WHITE);
@@ -283,7 +292,8 @@ void MainScene::Draw(){
 		DrawString(CHORD_X + MARGIN, CHORD_Y, CHORD_NAME[2][(baseNote + 7) % 12], WHITE);
 		DrawString(CHORD_X - MARGIN, CHORD_Y + MARGIN, CHORD_NAME[3][(baseNote + 2) % 12], WHITE);
 		DrawString(CHORD_X, CHORD_Y + MARGIN, CHORD_NAME[3][(baseNote + 9) % 12], WHITE);
-		DrawString(CHORD_X + MARGIN, CHORD_Y + MARGIN, CHORD_NAME[3][(baseNote + 4) % 12], WHITE);
+		if (Input::Key(KEY_INPUT_LALT) > 0) DrawString(CHORD_X + MARGIN, CHORD_Y + MARGIN, CHORD_NAME[2][(baseNote + 4) % 12], WHITE);
+		else DrawString(CHORD_X + MARGIN, CHORD_Y + MARGIN, CHORD_NAME[3][(baseNote + 4) % 12], WHITE);
 	}
 	else {
 		DrawString(CHORD_X - MARGIN, CHORD_Y, CHORD_NAME[0][(baseNote + 5) % 12], WHITE);
@@ -294,6 +304,8 @@ void MainScene::Draw(){
 		DrawString(CHORD_X, CHORD_Y + MARGIN, CHORD_NAME[1][(baseNote + 9) % 12], WHITE);
 		DrawString(CHORD_X + MARGIN, CHORD_Y + MARGIN, CHORD_NAME[1][(baseNote + 4) % 12], WHITE);
 	}
+	// ベース、ルート音を表示
+	DrawFormatString(CHORD_X - MARGIN, CHORD_Y - MARGIN, WHITE, "Base:%s(%d+%d)", CIRCLE_OF_FIFTH[0][baseNote] ,rootNote, baseNote);
 	
 	
 
