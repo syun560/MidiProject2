@@ -330,7 +330,7 @@ void MidiController::Draw() const{
 		else DrawFormatString(320, 50 + 20*i, WHITE, "%s (%d)", InstrumentsName[NowProgram[i]], NowProgram[i]);
 	}
 	// –Â‚Á‚Ä‚¢‚é‰¹‚ğ•\¦‚·‚é
-	int j = 0;
+	int j = 23;
 	for (auto itr = cs.cbegin(); itr != cs.cend(); itr++) {
 		DrawFormatString(50, j * 20, WHITE, "CH:%d Note:%d Gate:%.2f", itr->GetCh(), itr->GetNote(), itr->GetGate());
 		j++;

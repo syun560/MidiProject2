@@ -8,6 +8,10 @@ static const char CIRCLE_OF_FIFTH[2][12][5] = {
 	"Am", "Em", "Bm", "F♯m", "C♯m", "G#m", "D♯m", "B♭m", "Fm",  "Cm",  "Gm",  "Dm"
 };
 
+static const int MAJOR_SCALE[8] = {
+	0, 0, 2, 4, 5, 7, 9, 11
+};
+
 static const char CHORD_NAME[6][12][8] = {
 	"C", "D♭", "D",  "E♭", "E",  "F",  "G♭", "G",  "A♭", "A",  "B♭", "B",
 	"Cm", "C#m", "Dm", "D#m", "Em", "Fm", "F#m", "Gm", "G#m", "Am", "B♭m", "Bm",
@@ -73,27 +77,41 @@ int MainScene::tenkai(int key) {
 
 int MainScene::Update() {
 	// 操作系
-	static const int KENBAN_MAX = 18;
-	int kenban[KENBAN_MAX];
-	kenban[0] = Input::Key(KEY_INPUT_Z); // ルート音
-	kenban[1] = Input::Key(KEY_INPUT_S);
-	kenban[2] = Input::Key(KEY_INPUT_X);
-	kenban[3] = Input::Key(KEY_INPUT_D);
-	kenban[4] = Input::Key(KEY_INPUT_C);
-	kenban[5] = Input::Key(KEY_INPUT_V);
-	kenban[6] = Input::Key(KEY_INPUT_G);
-	kenban[7] = Input::Key(KEY_INPUT_B);
-	kenban[8] = Input::Key(KEY_INPUT_H);
-	kenban[9] = Input::Key(KEY_INPUT_N);
-	kenban[10] = Input::Key(KEY_INPUT_J);
-	kenban[11] = Input::Key(KEY_INPUT_M);
-	kenban[12] = Input::Key(KEY_INPUT_COMMA); // ルート音（オクターブ上）
-	kenban[13] = Input::Key(KEY_INPUT_L);
-	kenban[14] = Input::Key(KEY_INPUT_PERIOD);
-	kenban[15] = Input::Key(KEY_INPUT_SEMICOLON);
-	kenban[16] = Input::Key(KEY_INPUT_SLASH);
-	kenban[17] = Input::Key(KEY_INPUT_BACKSLASH);
-
+	static const int KENBAN_MAX = 18, CHORD_MAX = 10;
+	int kenban[KENBAN_MAX] = {
+		Input::Key(KEY_INPUT_Z),
+		Input::Key(KEY_INPUT_S),
+		Input::Key(KEY_INPUT_X),
+		Input::Key(KEY_INPUT_D),
+		Input::Key(KEY_INPUT_C),
+		Input::Key(KEY_INPUT_V),
+		Input::Key(KEY_INPUT_G),
+		Input::Key(KEY_INPUT_B),
+		Input::Key(KEY_INPUT_H),
+		Input::Key(KEY_INPUT_N),
+		Input::Key(KEY_INPUT_J),
+		Input::Key(KEY_INPUT_M),
+		Input::Key(KEY_INPUT_COMMA),
+		Input::Key(KEY_INPUT_L),
+		Input::Key(KEY_INPUT_PERIOD),
+		Input::Key(KEY_INPUT_SEMICOLON),
+		Input::Key(KEY_INPUT_SLASH),
+		Input::Key(KEY_INPUT_BACKSLASH)
+	};
+	int numPad[CHORD_MAX] = {
+		Input::Key(KEY_INPUT_NUMPAD0),
+		Input::Key(KEY_INPUT_NUMPAD1),
+		Input::Key(KEY_INPUT_NUMPAD2),
+		Input::Key(KEY_INPUT_NUMPAD3),
+		Input::Key(KEY_INPUT_NUMPAD4),
+		Input::Key(KEY_INPUT_NUMPAD5),
+		Input::Key(KEY_INPUT_NUMPAD6),
+		Input::Key(KEY_INPUT_NUMPAD7),
+		Input::Key(KEY_INPUT_NUMPAD8),
+		Input::Key(KEY_INPUT_NUMPAD9),
+	};
+	int chordType = 0;
+	if (Input::Key(KEY_INPUT_LCONTROL) > 0) chordType = 1;
 
 	static int holdtime = 30;
 	if (InputMode) {
@@ -189,8 +207,45 @@ int MainScene::Update() {
 			if (kenban[i] > 0) midiController.PlayHold(midiController.GetFocusCh(), rootNote + baseNote + i, 100);
 		}
 
+		// Play Diatonic Chord
+		static int chordCh = 1;
+		for (int i = 1; i <= 6; i++) {
+			if (numPad[i] > 0) {
+				int note = rootNote + baseNote + MAJOR_SCALE[i];
+				// root
+				midiController.PlayHold(chordCh, note, 100);
+				
+				// 3rd (omit)
+				//if (i == 1 || i == 4 || i== 5 || (Input::Key(KEY_INPUT_LALT) > 0 && (i == 2 || i == 3))) midiController.PlayHold(chordCh, note + 4, 100);
+				//else midiController.PlayHold(chordCh, note + 3, 100);
+
+				// 5th
+				midiController.PlayHold(chordCh, note + 7, 100);
+
+				// 7th
+				if (Input::Key(KEY_INPUT_LCONTROL) > 0) {
+					if ((Input::Key(KEY_INPUT_LALT) <= 0 && i == 1) || i == 4) midiController.PlayHold(chordCh, note + 11, 100);
+					else midiController.PlayHold(chordCh, note + 10, 100);
+				}
+				// add9
+				else if (Input::Key(KEY_INPUT_RIGHT) > 0) {
+					midiController.PlayHold(chordCh, note + 14, 100);
+				}
+				else { // Octave
+					midiController.PlayHold(chordCh, note + 12, 100);
+				}
+				
+
+				// sus4 (12nd)
+				if (Input::Key(KEY_INPUT_UP) > 0) midiController.PlayHold(chordCh, note + 17, 100);
+				// 3rd
+				else if (i == 1 || i == 4 || i== 5 || (Input::Key(KEY_INPUT_LALT) > 0 && (i == 2 || i == 3))) midiController.PlayHold(chordCh, note + 16, 100);
+				else midiController.PlayHold(chordCh, note + 15, 100);
+			}
+		}
+
 		if (Input::Key(KEY_INPUT_NUMPAD7) == 1) { // 転調♭
-			baseNote += 5;
+			baseNote += 11;
 			baseNote %= 12;
 			midiController.PlayChord(midiController.GetFocusCh(), tenkai(0), 480, 100);
 		}
@@ -199,37 +254,11 @@ int MainScene::Update() {
 			midiController.PlayChord(midiController.GetFocusCh(), tenkai(0), 480, 100);
 		}
 		else if (Input::Key(KEY_INPUT_NUMPAD9) == 1) { // 転調♯
-			baseNote += 7;
+			baseNote += 1;
 			baseNote %= 12;
 			midiController.PlayChord(midiController.GetFocusCh(), tenkai(0), 480, 100);
 		}
-		else if (Input::Key(KEY_INPUT_NUMPAD4) > 0) { // Ⅳの和音
-			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(5), 100, false, 2);
-			else midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(5), 100);
-		}
-		else if (Input::Key(KEY_INPUT_NUMPAD5) > 0) { // Ⅰの和音
-			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(0), 100, false, 2);
-			else midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(0), 100);
-		}
-		else if (Input::Key(KEY_INPUT_NUMPAD6) > 0) { // Ⅴの和音
-			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(7), 100, false, 1);
-			else midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(7), 100);
-		}
-		else if (Input::Key(KEY_INPUT_NUMPAD1) > 0) { // Ⅱmの和音
-			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(2), 100, true, 1);
-			else midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(2), 100, true);
-		}
-		else if (Input::Key(KEY_INPUT_NUMPAD2) > 0) { // Ⅵmの和音
-			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(9), 100, true, 1);
-			else midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(9), 100, true);
-		}
-		else if (Input::Key(KEY_INPUT_NUMPAD3) > 0) { // Ⅲmの和音
-			if (Input::Key(KEY_INPUT_LCONTROL) > 0) {
-				if (Input::Key(KEY_INPUT_LALT) > 0) midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(4), 100, false, 1);
-				else midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(4), 100, true, 1);
-			}
-			else midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(4), 100, true);
-		}
+		
 		if (Input::Key(KEY_INPUT_SPACE) == 1) {
 			midiController.AllStop();
 			conductor.PlayOrPause();
@@ -274,35 +303,30 @@ void MainScene::Draw(){
 	gridRoll.Draw();
 	commandInput.Draw(0, FMY - 20);
 
-	// 操作方法を表示
-	/*if (Input::Key(KEY_INPUT_M) > 0) {
-		static const int INFO_X = 400;
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 125);
-		DrawBox(INFO_X - 20, 80, FMX - 20, 240, BLACK, TRUE);
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-		DrawFormatString(INFO_X, 80, WHITE, "操作方法\nOキーで読込\nSキーで保存\nAキーで再生\nDキーで停止\nCキーでクリア\nESCで終了");
-	}*/
-
 	// コードを表示
 	static const int CHORD_X = 400, CHORD_Y = 440;
 	static const int MARGIN = 50;
 	if (Input::Key(KEY_INPUT_LCONTROL) > 0) {
-		DrawString(CHORD_X - MARGIN, CHORD_Y, CHORD_NAME[4][(baseNote + 5) % 12], WHITE);
-		DrawString(CHORD_X, CHORD_Y, CHORD_NAME[4][(baseNote + 0) % 12], WHITE);
-		DrawString(CHORD_X + MARGIN, CHORD_Y, CHORD_NAME[2][(baseNote + 7) % 12], WHITE);
-		DrawString(CHORD_X - MARGIN, CHORD_Y + MARGIN, CHORD_NAME[3][(baseNote + 2) % 12], WHITE);
-		DrawString(CHORD_X, CHORD_Y + MARGIN, CHORD_NAME[3][(baseNote + 9) % 12], WHITE);
+		if (Input::Key(KEY_INPUT_LALT) > 0) DrawString(CHORD_X - MARGIN, CHORD_Y + MARGIN, CHORD_NAME[2][baseNote], WHITE);
+		else DrawString(CHORD_X - MARGIN, CHORD_Y + MARGIN, CHORD_NAME[4][baseNote], WHITE);
+
+		if (Input::Key(KEY_INPUT_LALT) > 0) DrawString(CHORD_X, CHORD_Y + MARGIN, CHORD_NAME[2][(baseNote + 2) % 12], WHITE);
+		else DrawString(CHORD_X, CHORD_Y + MARGIN, CHORD_NAME[3][(baseNote + 2) % 12], WHITE);
+
 		if (Input::Key(KEY_INPUT_LALT) > 0) DrawString(CHORD_X + MARGIN, CHORD_Y + MARGIN, CHORD_NAME[2][(baseNote + 4) % 12], WHITE);
 		else DrawString(CHORD_X + MARGIN, CHORD_Y + MARGIN, CHORD_NAME[3][(baseNote + 4) % 12], WHITE);
+
+		DrawString(CHORD_X - MARGIN, CHORD_Y, CHORD_NAME[4][(baseNote + 5) % 12], WHITE);
+		DrawString(CHORD_X, CHORD_Y, CHORD_NAME[2][(baseNote + 7) % 12], WHITE);
+		DrawString(CHORD_X + MARGIN, CHORD_Y, CHORD_NAME[3][(baseNote + 9) % 12], WHITE);
 	}
 	else {
-		DrawString(CHORD_X - MARGIN, CHORD_Y, CHORD_NAME[0][(baseNote + 5) % 12], WHITE);
-		DrawString(CHORD_X - MARGIN, CHORD_Y, CHORD_NAME[0][(baseNote + 5) % 12], WHITE);
-		DrawString(CHORD_X, CHORD_Y, CHORD_NAME[0][(baseNote + 0) % 12], WHITE);
-		DrawString(CHORD_X + MARGIN, CHORD_Y, CHORD_NAME[0][(baseNote + 7) % 12], WHITE);
-		DrawString(CHORD_X - MARGIN, CHORD_Y + MARGIN, CHORD_NAME[1][(baseNote + 2) % 12], WHITE);
-		DrawString(CHORD_X, CHORD_Y + MARGIN, CHORD_NAME[1][(baseNote + 9) % 12], WHITE);
+		DrawString(CHORD_X - MARGIN, CHORD_Y + MARGIN, CHORD_NAME[0][baseNote], WHITE);
+		DrawString(CHORD_X, CHORD_Y + MARGIN, CHORD_NAME[1][(baseNote + 2) % 12], WHITE);
 		DrawString(CHORD_X + MARGIN, CHORD_Y + MARGIN, CHORD_NAME[1][(baseNote + 4) % 12], WHITE);
+		DrawString(CHORD_X - MARGIN, CHORD_Y, CHORD_NAME[0][(baseNote + 5) % 12], WHITE);
+		DrawString(CHORD_X, CHORD_Y, CHORD_NAME[0][(baseNote + 7) % 12], WHITE);
+		DrawString(CHORD_X + MARGIN, CHORD_Y, CHORD_NAME[1][(baseNote + 9) % 12], WHITE);
 	}
 	// ベース、ルート音を表示
 	DrawFormatString(CHORD_X - MARGIN, CHORD_Y - MARGIN, WHITE, "Base:%s(%d+%d)", CIRCLE_OF_FIFTH[0][baseNote] ,rootNote, baseNote);
