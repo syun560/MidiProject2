@@ -12,9 +12,9 @@ static const char CHORD_NAME[6][12][8] = {
 	"C", "DÅÛ", "D",  "EÅÛ", "E",  "F",  "GÅÛ", "G",  "AÅÛ", "A",  "BÅÛ", "B",
 	"Cm", "C#m", "Dm", "D#m", "Em", "Fm", "F#m", "Gm", "G#m", "Am", "BÅÛm", "Bm",
 	"C7", "DÅÛ7", "D7",  "EÅÛ7", "E7",  "F7",  "GÅÛ7", "G7",  "AÅÛ7", "A7",  "BÅÛ7", "B7",
-	"C7", "C#m7", "Dm7", "D#m7", "Em7", "Fm7", "F#m7", "Gm7", "G#m7", "Am7", "BÅÛm7", "Bm7",
+	"Cm7", "C#m7", "Dm7", "D#m7", "Em7", "Fm7", "F#m7", "Gm7", "G#m7", "Am7", "BÅÛm7", "Bm7",
 	"CM7", "DÅÛM7", "DM7",  "EÅÛM7", "EM7",  "FM7",  "GÅÛM7", "GM7",  "AÅÛM7", "AM7",  "BÅÛM7", "BM7",
-	"CM7", "C#mM7", "DmM7", "D#mM7", "EmM7", "FmM7", "F#mM7", "GmM7", "G#mM7", "AmM7", "BÅÛmM7", "BmM7",
+	"CmM7", "C#mM7", "DmM7", "D#mM7", "EmM7", "FmM7", "F#mM7", "GmM7", "G#mM7", "AmM7", "BÅÛmM7", "BmM7",
 };
 
 static const char COMMON_CHORD[2][7][8] = {
@@ -198,27 +198,27 @@ int MainScene::Update() {
 			midiController.PlayChord(midiController.GetFocusCh(), tenkai(0), 480, 100);
 		}
 		else if (Input::Key(KEY_INPUT_NUMPAD4) > 0) { // áWÇÃòaâπ
-			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(5), 480 * 2, 100, false, true);
+			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(5), 100, false, 2);
 			else midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(5), 100);
 		}
 		else if (Input::Key(KEY_INPUT_NUMPAD5) > 0) { // áTÇÃòaâπ
-			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(0), 480 * 2, 100, false, true);
+			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(0), 100, false, 2);
 			else midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(0), 100);
 		}
 		else if (Input::Key(KEY_INPUT_NUMPAD6) > 0) { // áXÇÃòaâπ
-			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(7), 480 * 2, 100, false, true);
+			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(7), 100, false, 1);
 			else midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(7), 100);
 		}
 		else if (Input::Key(KEY_INPUT_NUMPAD1) > 0) { // áUmÇÃòaâπ
-			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(2), 480 * 2, 100, true, true);
+			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(2), 100, true, 1);
 			else midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(2), 100, true);
 		}
 		else if (Input::Key(KEY_INPUT_NUMPAD2) > 0) { // áYmÇÃòaâπ
-			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(9), 480 * 2, 100, true, true);
+			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(9), 100, true, 1);
 			else midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(9), 100, true);
 		}
 		else if (Input::Key(KEY_INPUT_NUMPAD3) > 0) { // áVmÇÃòaâπ
-			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChord(midiController.GetFocusCh(), tenkai(4), 480 * 2, 100, true, true);
+			if (Input::Key(KEY_INPUT_LCONTROL) > 0) midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(4), 100, true, 1);
 			else midiController.PlayChordHold(midiController.GetFocusCh(), tenkai(4), 100, true);
 		}
 		if (Input::Key(KEY_INPUT_SPACE) == 1) {
@@ -277,15 +277,25 @@ void MainScene::Draw(){
 	// ÉRÅ[ÉhÇï\é¶
 	static const int CHORD_X = 400, CHORD_Y = 400;
 	static const int MARGIN = 50;
-	int chordType = 0;
-	if (Input::Key(KEY_INPUT_LCONTROL) > 0) chordType = 2;
+	if (Input::Key(KEY_INPUT_LCONTROL) > 0) {
+		DrawString(CHORD_X - MARGIN, CHORD_Y, CHORD_NAME[4][(baseNote + 5) % 12], WHITE);
+		DrawString(CHORD_X, CHORD_Y, CHORD_NAME[4][(baseNote + 0) % 12], WHITE);
+		DrawString(CHORD_X + MARGIN, CHORD_Y, CHORD_NAME[2][(baseNote + 7) % 12], WHITE);
+		DrawString(CHORD_X - MARGIN, CHORD_Y + MARGIN, CHORD_NAME[3][(baseNote + 2) % 12], WHITE);
+		DrawString(CHORD_X, CHORD_Y + MARGIN, CHORD_NAME[3][(baseNote + 9) % 12], WHITE);
+		DrawString(CHORD_X + MARGIN, CHORD_Y + MARGIN, CHORD_NAME[3][(baseNote + 4) % 12], WHITE);
+	}
+	else {
+		DrawString(CHORD_X - MARGIN, CHORD_Y, CHORD_NAME[0][(baseNote + 5) % 12], WHITE);
+		DrawString(CHORD_X - MARGIN, CHORD_Y, CHORD_NAME[0][(baseNote + 5) % 12], WHITE);
+		DrawString(CHORD_X, CHORD_Y, CHORD_NAME[0][(baseNote + 0) % 12], WHITE);
+		DrawString(CHORD_X + MARGIN, CHORD_Y, CHORD_NAME[0][(baseNote + 7) % 12], WHITE);
+		DrawString(CHORD_X - MARGIN, CHORD_Y + MARGIN, CHORD_NAME[1][(baseNote + 2) % 12], WHITE);
+		DrawString(CHORD_X, CHORD_Y + MARGIN, CHORD_NAME[1][(baseNote + 9) % 12], WHITE);
+		DrawString(CHORD_X + MARGIN, CHORD_Y + MARGIN, CHORD_NAME[1][(baseNote + 4) % 12], WHITE);
+	}
 	
-	DrawString(CHORD_X - MARGIN, CHORD_Y         , CHORD_NAME[0 + chordType][(baseNote + 5) % 12], WHITE);
-	DrawString(CHORD_X         , CHORD_Y         , CHORD_NAME[0 + chordType][(baseNote + 0) % 12], WHITE);
-	DrawString(CHORD_X + MARGIN, CHORD_Y         , CHORD_NAME[0 + chordType][(baseNote + 7) % 12], WHITE);
-	DrawString(CHORD_X - MARGIN, CHORD_Y + MARGIN, CHORD_NAME[1 + chordType][(baseNote + 2) % 12], WHITE);
-	DrawString(CHORD_X         , CHORD_Y + MARGIN, CHORD_NAME[1 + chordType][(baseNote + 9) % 12], WHITE);
-	DrawString(CHORD_X + MARGIN, CHORD_Y + MARGIN, CHORD_NAME[1 + chordType][(baseNote + 4) % 12], WHITE);
+	
 
 	// TODO:ÉeÉìÉ|Ç‚ÉvÉåÉCèÛãµÅAÉXÉPÅ[ÉãÇï\é¶
 	// ÉRÅ[ÉhÇï\é¶

@@ -291,12 +291,13 @@ void MidiController::PlayChord(int ch, int baseNote, int gate, int vel, bool isM
 	if (isSeventh) Play(ch, baseNote + 10, gate, vel);
 }
 
-void MidiController::PlayChordHold(int ch, int baseNote, int vel, bool isMinor, bool isSeventh) {
+void MidiController::PlayChordHold(int ch, int baseNote, int vel, bool isMinor, int isSeventh) {
 	PlayHold(ch, baseNote, vel);
 	if (isMinor) PlayHold(ch, baseNote + 3, vel);
 	else PlayHold(ch, baseNote + 4, vel);
 	PlayHold(ch, baseNote + 7, vel);
-	if (isSeventh) PlayHold(ch, baseNote + 10, vel);
+	if (isSeventh == 1) PlayHold(ch, baseNote + 10, vel);
+	else if (isSeventh == 2) PlayHold(ch, baseNote + 11, vel);
 }
 
 void MidiController::Stop(int ch, int note) {
