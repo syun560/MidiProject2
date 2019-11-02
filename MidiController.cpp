@@ -188,11 +188,12 @@ const static char DrumName[128][32] = {
 	"",
 	"SFX",
 };
-
+static const char keyName[12][4] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
 MidiController::MidiController() :CH_MAX(16){
 	for (int i = 0; i < CH_MAX; i++) NowProgram[i] = 0;
 	panel.Set(16,"");
+	currentChord = currentChordIsMinor = -1;
 }
 
 int MidiController::Init() {
@@ -234,6 +235,23 @@ void MidiController::Update(double delta) {
 			itr = cs.erase(itr);
 		}
 		else ++itr;
+	}
+
+	// コード判定
+	currentChord = currentChordIsMinor = -1;
+	for (auto itr = cs.cbegin(); itr != cs.cend(); itr++) {
+		for (auto itr2 = cs.cbegin(); itr2 != cs.cend(); itr2++) {
+			int dif = (itr2->GetNote() - itr->GetNote()) % 12;
+			if (dif == 3) {
+				currentChordIsMinor = 1;
+			}
+			else if (dif == 4) {
+				currentChordIsMinor = 0;
+			}
+			else if (dif == 7) { // 完全五度の音が見つかったら
+				currentChord = itr->GetNote();
+			}
+		}
 	}
 }
 
@@ -329,6 +347,7 @@ void MidiController::Draw() const{
 		if(i==9) DrawFormatString(320, 50 + 20 * i, WHITE, "%s (%d)", DrumName[NowProgram[i]], NowProgram[i]);
 		else DrawFormatString(320, 50 + 20*i, WHITE, "%s (%d)", InstrumentsName[NowProgram[i]], NowProgram[i]);
 	}
+
 	// 鳴っている音を表示する
 	int j = 23;
 	for (auto itr = cs.cbegin(); itr != cs.cend(); itr++) {
@@ -336,6 +355,9 @@ void MidiController::Draw() const{
 		j++;
 	}
 	panel.Draw(320, 50);
+
+	// コードを表示する
+	if (currentChord != -1 && currentChordIsMinor != -1) DrawFormatString(50, j * 20, WHITE, "Chord:%s", CHORD_NAME[currentChordIsMinor][currentChord%12]);
 }
 
 void MidiController::Save(FILE* fp) {

@@ -14,6 +14,7 @@ class MidiController {
 	HMIDIOUT g_hMidi;
 	const int CH_MAX;
 	int NowProgram[16];
+	int currentChord, currentChordIsMinor;
 	PanelMenu panel;
 	std::vector<CurrentSound> cs;
 	void Stop(int ch, int note);

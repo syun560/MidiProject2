@@ -2,30 +2,6 @@
 #include "MainScene.h"
 #include "Input.h"
 
-// ŒÜ“xŒ—
-static const char CIRCLE_OF_FIFTH[2][12][5] = {
-	"C",  "G",  "D",  "A",    "E",    "B",   "Gó",  "Dó",  "Aó", "Eó", "Bó", "F",
-	"Am", "Em", "Bm", "Fòm", "Còm", "G#m", "Dòm", "Bóm", "Fm",  "Cm",  "Gm",  "Dm"
-};
-
-static const int MAJOR_SCALE[8] = {
-	0, 0, 2, 4, 5, 7, 9, 11
-};
-
-static const char CHORD_NAME[6][12][8] = {
-	"C", "Dó", "D",  "Eó", "E",  "F",  "Gó", "G",  "Aó", "A",  "Bó", "B",
-	"Cm", "C#m", "Dm", "D#m", "Em", "Fm", "F#m", "Gm", "G#m", "Am", "Bóm", "Bm",
-	"C7", "Dó7", "D7",  "Eó7", "E7",  "F7",  "Gó7", "G7",  "Aó7", "A7",  "Bó7", "B7",
-	"Cm7", "C#m7", "Dm7", "D#m7", "Em7", "Fm7", "F#m7", "Gm7", "G#m7", "Am7", "Bóm7", "Bm7",
-	"CM7", "DóM7", "DM7",  "EóM7", "EM7",  "FM7",  "GóM7", "GM7",  "AóM7", "AM7",  "BóM7", "BM7",
-	"CmM7", "C#mM7", "DmM7", "D#mM7", "EmM7", "FmM7", "F#mM7", "GmM7", "G#mM7", "AmM7", "BómM7", "BmM7",
-};
-
-static const char COMMON_CHORD[2][7][8] = {
-	"C", "Dm", "Em",  "F", "G", "Am",
-	"CM7", "Dm7", "Em7",  "FM7", "G7", "Am7"
-};
-
 MainScene::MainScene() {
 	font = CreateFontToHandle(NULL, 40, 3, DX_FONTTYPE_ANTIALIASING);
 	if(midiController.Init() == -1) printfDx("MIDI‰Šú‰»¸”s\n");
@@ -179,6 +155,7 @@ int MainScene::Update() {
 			else if (Input::Key(KEY_INPUT_RETURN) == 1) { // ©“®ì‹È
 				midiEventManager.deleteAllEvent();
 				midiEventManager.autoCreate(480 * 3 * 32);
+				printfDx("autoCreate");
 			}
 			else if (Input::Key(KEY_INPUT_V) == 1) gridRoll.Paste();
 			//else if (Input::Key(KEY_INPUT_X) == 1) StopMusic(); // MIDI’â~

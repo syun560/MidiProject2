@@ -265,7 +265,10 @@ double MidiEventManager::loadMidiMsgFromSMF(int track, unsigned char* data, int 
 
 int MidiEventManager::getMidiMsgForSMF(unsigned char* data) {
 	int i = 0;
-	// 最初の処理
+
+	// 
+
+	// ノートオン・ノートオフ
 	for (auto itr = noteMap[activeCh].cbegin(); itr != noteMap[activeCh].cend(); itr++) {
 		// デルタタイムの計算
 		int delta = itr->second.GetDelta();
