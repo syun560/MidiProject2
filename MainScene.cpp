@@ -138,7 +138,7 @@ int MainScene::Update() {
 			}
 			else if (Input::Key(KEY_INPUT_O) == 1) { // ファイル読み込み
 				// FileSave("data.dat");
-				if (smfio.read("kaeru.mid") == -1) printfDx("読み込み失敗\n");
+				if (smfio.read("mahou.mid") == -1) printfDx("読み込み失敗\n");
 				else {
 					for (int i = 0; i < smfio.getTrackNum(); ++i) {
 						double bpm = midiEventManager.loadMidiMsgFromSMF(i, smfio.getTrackData(i), smfio.getTrackSize(i));
@@ -149,13 +149,27 @@ int MainScene::Update() {
 				}
 			}
 			else if (Input::Key(KEY_INPUT_A) == 1) { // 再生
-				if (PlayMusic("output.mid", DX_PLAYTYPE_BACK) == -1) printfDx("エラー発生\n");
+				if (PlayMusic("kaeru.mid", DX_PLAYTYPE_BACK) == -1) printfDx("エラー発生\n");
 				else printfDx("%sを再生\n", "output.mid");
 			}
-			else if (Input::Key(KEY_INPUT_RETURN) == 1) { // 自動作曲
-				midiEventManager.deleteAllEvent();
-				midiEventManager.autoCreate(480 * 3 * 32);
-				printfDx("autoCreate");
+			else if (Input::Key(KEY_INPUT_I) > 0) { // 魔法の演奏
+				// ペンタトニック・スケールでランダムに配置（あまりに飛び飛びの演奏はやめる）
+				static const int majorScale[8] = { 60, 62, 64, 65, 67, 69, 71, 72 };
+				static const int chordC[4] = { 60, 64, 67, 72 };
+				static const int kokken[] = { 54, 56, 58, 61, 63, 66, 68, 70, 73, 75, 78 };
+				static int key = 5, preKey = 5;
+
+				if (Input::Key(KEY_INPUT_I) == 1) {
+					preKey = key;
+					do {
+						key = preKey - 2 + GetRand(4);
+					} while (key < 0 || key > 10);
+				}
+
+				midiController.PlayHold(0, kokken[key], 100);
+				// midiEventManager.deleteAllEvent();
+				// midiEventManager.autoCreate(480 * 3 * 32);
+				// printfDx("autoCreate");
 			}
 			else if (Input::Key(KEY_INPUT_V) == 1) gridRoll.Paste();
 			//else if (Input::Key(KEY_INPUT_X) == 1) StopMusic(); // MIDI停止
